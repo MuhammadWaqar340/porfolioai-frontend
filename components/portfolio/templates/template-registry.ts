@@ -1,3 +1,4 @@
+import { AuroraLayout } from "@/components/portfolio/templates/aurora-layout";
 import { BoldLayout } from "@/components/portfolio/templates/bold-layout";
 import { CreativeLayout } from "@/components/portfolio/templates/creative-layout";
 import { DeveloperLayout } from "@/components/portfolio/templates/developer-layout";
@@ -23,6 +24,7 @@ export const templateLayouts: Record<
   elegant: ElegantLayout,
   developer: DeveloperLayout,
   bold: BoldLayout,
+  aurora: AuroraLayout,
 };
 
 export function getTemplateLayout(

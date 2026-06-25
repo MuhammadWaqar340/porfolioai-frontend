@@ -2,9 +2,11 @@
 
 import type { TemplateSlug } from "@/constants/templates";
 import {
+  getFreeSectionShell,
   getProSectionInnerStyle,
   getProSectionShell,
   getSectionAnimationClass,
+  isFreeTemplate,
   isProTemplate,
   type PortfolioSectionId,
 } from "@/components/portfolio/templates/template-section-config";
@@ -29,13 +31,15 @@ export function TemplateSection({
   className,
   children,
 }: TemplateSectionProps) {
+  const freeShell = getFreeSectionShell(template, sectionId);
   const shellClass = isProTemplate(template)
     ? getProSectionShell(template, sectionId)
-    : cn("group/section", getTemplateSectionShell(template, index));
+    : freeShell || cn("group/section", getTemplateSectionShell(template, index));
 
-  const animationClass = isProTemplate(template)
-    ? getSectionAnimationClass(template, sectionId, index)
-    : templateSectionClass(index);
+  const animationClass =
+    isProTemplate(template) || isFreeTemplate(template)
+      ? getSectionAnimationClass(template, sectionId, index)
+      : templateSectionClass(index);
 
   const innerStyle = getProSectionInnerStyle(template, sectionId);
 
@@ -83,6 +87,8 @@ function getTemplateSeparatorLine(template: TemplateSlug): string {
     developer:
       "bg-gradient-to-r from-transparent via-emerald-500/45 to-transparent",
     bold: "h-0.5 bg-foreground/80",
+    aurora:
+      "bg-gradient-to-r from-cyan-500/40 via-violet-500/50 to-teal-500/40",
   };
   return lines[template];
 }
@@ -99,6 +105,8 @@ function getTemplateSeparatorDot(template: TemplateSlug): string {
     developer:
       "font-mono text-[9px] text-emerald-500/80 before:content-['{·}']",
     bold: "h-3 w-3 border-2 border-foreground bg-background",
+    aurora:
+      "h-2 w-2 rounded-full bg-gradient-to-r from-cyan-400 via-teal-400 to-violet-400 shadow-[0_0_12px_oklch(0.7_0.15_195/60%)]",
   };
   return dots[template];
 }

@@ -72,11 +72,13 @@ export function ModernLayout({
               <div className="mt-6 flex-1 sm:mt-0">
                 <h1
                   className={cn(
-                    "animate-fade-in-up text-3xl font-bold tracking-tight opacity-0 sm:text-4xl",
+                    "animate-fade-in-up text-3xl font-bold tracking-tight opacity-0 sm:text-4xl lg:text-5xl",
                     animationDelays[150]
                   )}
                 >
-                  {profile.fullName || "Your Name"}
+                  <span className="bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
+                    {profile.fullName || "Your Name"}
+                  </span>
                 </h1>
                 <p
                   className={cn(

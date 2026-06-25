@@ -6,6 +6,7 @@ export const TEMPLATE_SLUGS = [
   "elegant",
   "developer",
   "bold",
+  "aurora",
 ] as const;
 
 export type TemplateSlug = (typeof TEMPLATE_SLUGS)[number];

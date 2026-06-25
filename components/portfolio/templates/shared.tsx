@@ -46,7 +46,8 @@ type ContactVariant =
   | "creative"
   | "elegant"
   | "developer"
-  | "bold";
+  | "bold"
+  | "aurora";
 
 /** Strip app gradient button styles — used for minimal/elegant contact chips */
 const contactGradientReset =
@@ -132,6 +133,14 @@ const contactVariantClasses: Record<ContactVariant, ContactVariantStyle> = {
       "rounded-none border-2 border-foreground bg-transparent font-bold uppercase shadow-[3px_3px_0_0_var(--foreground)] hover:translate-x-0.5 hover:translate-y-0.5",
     primary:
       "rounded-none border-2 border-foreground bg-foreground font-bold uppercase text-background shadow-[3px_3px_0_0_var(--foreground)]",
+    usePlainLinks: false,
+  },
+  aurora: {
+    wrapper: "gap-3",
+    outline:
+      "rounded-none border border-violet-500/25 bg-transparent px-4 text-sm text-foreground transition-colors hover:border-rose-500/40 hover:bg-rose-500/[0.05]",
+    primary:
+      "rounded-none border border-violet-900 bg-violet-950 px-4 text-sm text-violet-50 hover:bg-violet-900 dark:border-violet-700 dark:bg-violet-800",
     usePlainLinks: false,
   },
 };
@@ -298,7 +307,7 @@ export function PortfolioBody({ template, className }: PortfolioBodyProps) {
 
   return (
     <div className={cn(templateBodyBackdrop[template], templateBodyStyles[template], className)}>
-      <div className="relative z-[1] space-y-8">
+      <div className="relative z-[1] space-y-10 sm:space-y-12">
       {portfolio?.variantName ? (
         <p className="mb-4 text-sm font-medium text-primary">
           Viewing variant: {portfolio.variantName}
@@ -356,7 +365,7 @@ export function PortfolioFooter({ className, template }: PortfolioFooterProps) {
   return (
     <footer
       className={cn(
-        "border-t py-10 text-center text-sm text-muted-foreground",
+        "border-t py-12 text-center text-sm text-muted-foreground",
         template === "modern" &&
           "border-primary/10 bg-gradient-to-b from-primary/[0.03] via-background to-violet-500/[0.04]",
         template === "minimal" &&
@@ -370,27 +379,49 @@ export function PortfolioFooter({ className, template }: PortfolioFooterProps) {
           "border-emerald-600/15 bg-gradient-to-b from-emerald-50/60 to-background text-muted-foreground dark:border-emerald-500/20 dark:from-zinc-950 dark:to-zinc-900 dark:text-zinc-400",
         template === "bold" &&
           "border-t-4 border-foreground bg-gradient-to-r from-foreground/[0.04] via-background to-foreground/[0.04] py-12 font-bold uppercase tracking-wide",
+        template === "aurora" &&
+          "border-none bg-[#faf9f7] pt-10 pb-14 dark:bg-background",
         className
       )}
     >
-      <div className="flex flex-col items-center gap-3">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4">
+        <div
+          className={cn(
+            "h-px w-16",
+            template === "modern" && "bg-gradient-to-r from-primary/60 to-violet-500/60",
+            template === "minimal" && "bg-foreground/25",
+            template === "professional" && "bg-primary/50",
+            template === "creative" &&
+              "bg-gradient-to-r from-primary via-fuchsia-500 to-sky-500",
+            template === "elegant" && "bg-amber-500/50",
+            template === "developer" && "bg-emerald-500/50",
+            template === "bold" && "h-1 w-12 bg-foreground",
+            template === "aurora" &&
+              "bg-gradient-to-r from-violet-600/60 via-rose-500/50 to-violet-600/60",
+            !template && "bg-border"
+          )}
+          aria-hidden
+        />
         <Link
           href="/"
-          className="rounded-md transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+          className="rounded-md transition-all duration-300 hover:opacity-85 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
           aria-label="PortfolioAI — go to homepage"
         >
           <LogoMark className="h-8 w-8" />
         </Link>
-        <p>
+        <p className="max-w-sm leading-relaxed">
           Built with{" "}
           <span
             className={cn(
-              "font-medium text-foreground",
+              "font-semibold text-foreground",
               template === "creative" && "text-gradient",
               template === "modern" && "text-gradient",
               template === "elegant" && "text-amber-700 dark:text-amber-300",
               template === "developer" && "font-mono text-emerald-700 dark:text-emerald-400",
-              template === "bold" && "uppercase tracking-tight"
+              template === "bold" && "uppercase tracking-tight",
+              template === "minimal" && "tracking-wide",
+              template === "aurora" &&
+                "font-heading text-violet-800 dark:text-rose-300",
             )}
           >
             PortfolioAI
@@ -414,6 +445,7 @@ const NAV_ITEMS = [
   { href: "#education", label: "Education" },
   { href: "#certifications", label: "Certs" },
   { href: "#testimonials", label: "Quotes" },
+  { href: "#contact", label: "Contact" },
 ];
 
 export function TemplateNav({ className, template = "modern" }: TemplateNavProps) {
@@ -427,19 +459,21 @@ export function TemplateNav({ className, template = "modern" }: TemplateNavProps
   return (
     <nav
       className={cn(
-        "sticky top-0 z-10 border-b backdrop-blur-md transition-all duration-300",
+        "sticky top-0 z-20 border-b backdrop-blur-xl transition-all duration-300",
+        "shadow-[0_1px_0_0_oklch(1_0_0/5%_inset),0_4px_24px_-12px_oklch(0_0_0/12%)]",
         templateNavStyles[template],
         className
       )}
     >
-      <div className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 py-2.5 sm:px-6">
+      <div className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 py-3 scrollbar-none sm:gap-1.5 sm:px-6">
         {navItems.map((item) => (
           <a
             key={item.href}
             href={item.href}
             className={cn(
-              "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground",
-              "transition-all duration-300 hover:scale-[1.03]",
+              "shrink-0 rounded-full px-3.5 py-2 text-xs font-medium text-muted-foreground",
+              "transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
               template === "modern" &&
                 "hover:bg-gradient-to-r hover:from-primary/10 hover:to-violet-500/10 hover:text-primary",
               template === "minimal" &&
@@ -453,7 +487,9 @@ export function TemplateNav({ className, template = "modern" }: TemplateNavProps
               template === "developer" &&
                 "hover:border-emerald-600/40 hover:bg-emerald-100 hover:text-emerald-900 dark:hover:border-emerald-400/50 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-300",
               template === "bold" &&
-                "rounded-none hover:bg-foreground hover:text-background"
+                "rounded-none hover:bg-foreground hover:text-background",
+              template === "aurora" &&
+                "rounded-none hover:bg-violet-500/10 hover:text-violet-900 dark:hover:text-rose-200",
             )}
           >
             {item.label}

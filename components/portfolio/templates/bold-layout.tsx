@@ -63,7 +63,7 @@ export function BoldLayout({
             {profile.location ? (
               <p
                 className={cn(
-                  "animate-fade-in-up mt-4 flex items-center gap-2 text-sm font-medium opacity-80 opacity-0",
+                  "animate-fade-in-up mt-4 flex items-center gap-2 text-sm font-medium text-background/80 opacity-0",
                   animationDelays[300]
                 )}
               >

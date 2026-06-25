@@ -60,7 +60,7 @@ export const PLAN_FEATURES = {
     "Contact form",
   ],
   pro: [
-    "All 7 templates (includes Modern)",
+    "All 8 templates (includes Modern & Aurora)",
     "Unlimited AI assistance",
     "Video introduction section",
     "Full analytics & referrers",

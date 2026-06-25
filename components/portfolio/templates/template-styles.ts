@@ -1,7 +1,8 @@
 import type { TemplateSlug } from "@/constants/templates";
 
 const shellTransition =
-  "transition-all duration-500 ease-out hover:shadow-md motion-reduce:transition-none";
+  "transition-all duration-500 ease-out hover:shadow-lg motion-reduce:transition-none";
+const shellPadding = "p-7 sm:p-10";
 
 export function getTemplateSectionShell(
   template: TemplateSlug,
@@ -28,44 +29,52 @@ export const templateBodyBackdrop: Record<TemplateSlug, string> = {
     "relative before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_80%_45%_at_50%_0%,oklch(0.65_0.18_155/12%),transparent_68%)] dark:before:bg-[linear-gradient(180deg,oklch(0.65_0.18_155/6%)_0%,transparent_40%)]",
   bold:
     "relative before:pointer-events-none before:absolute before:inset-0 before:bg-[repeating-linear-gradient(-45deg,transparent,transparent_40px,oklch(0_0_0/2%)_40px,oklch(0_0_0/2%)_41px)] dark:before:bg-[repeating-linear-gradient(-45deg,transparent,transparent_40px,oklch(1_0_0/3%)_40px,oklch(1_0_0/3%)_41px)]",
+  aurora:
+    "relative before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_70%_50%_at_20%_0%,oklch(0.7_0.15_195/8%),transparent_50%),radial-gradient(ellipse_60%_45%_at_80%_100%,oklch(0.6_0.22_300/8%),transparent_50%)]",
 };
 
 const templateSectionShellBase: Record<TemplateSlug, string> = {
   modern: [
-    "group/section rounded-2xl border border-primary/10 p-6 sm:p-8",
+    "group/section rounded-2xl border border-primary/10",
+    shellPadding,
     "bg-gradient-to-br from-primary/[0.06] via-background/80 to-violet-500/[0.08]",
     "shadow-[0_1px_0_0_oklch(1_0_0/40%_inset),var(--shadow-card)] backdrop-blur-sm",
     shellTransition,
     "hover:border-primary/25 hover:from-primary/[0.08] hover:to-violet-500/[0.1]",
   ].join(" "),
   minimal: [
-    "group/section rounded-xl border border-border/40 p-6 sm:p-8",
+    "group/section rounded-xl border border-border/40",
+    shellPadding,
     "bg-gradient-to-b from-muted/30 via-background to-background/90",
     shellTransition,
     "hover:border-border/70",
   ].join(" "),
   professional: [
-    "group/section rounded-xl border border-border/60 p-6 sm:p-8",
+    "group/section rounded-xl border border-border/60",
+    shellPadding,
     "bg-gradient-to-br from-muted/40 via-card/50 to-muted/20",
     "shadow-sm backdrop-blur-[1px]",
     shellTransition,
     "hover:border-primary/20 hover:from-muted/50",
   ].join(" "),
   creative: [
-    "group/section rounded-2xl border border-primary/15 p-6 sm:p-8",
+    "group/section rounded-2xl border border-primary/15",
+    shellPadding,
     "bg-gradient-to-br from-primary/[0.07] via-fuchsia-500/[0.04] to-sky-500/[0.07]",
     "shadow-lg shadow-primary/5 backdrop-blur-sm",
     shellTransition,
     "hover:border-fuchsia-500/25 hover:shadow-xl hover:shadow-fuchsia-500/10",
   ].join(" "),
   elegant: [
-    "group/section rounded-none border border-amber-500/15 p-6 sm:p-8",
+    "group/section rounded-none border border-amber-500/15",
+    shellPadding,
     "bg-gradient-to-br from-amber-500/[0.05] via-background to-orange-400/[0.04]",
     shellTransition,
     "hover:border-amber-500/30 hover:from-amber-500/[0.07]",
   ].join(" "),
   developer: [
-    "group/section rounded-xl border p-6 sm:p-8",
+    "group/section rounded-xl border",
+    shellPadding,
     "border-emerald-600/25 bg-gradient-to-br from-emerald-50/90 via-card to-white",
     "shadow-[var(--shadow-card)]",
     "dark:border-emerald-500/20 dark:from-zinc-900/50 dark:via-zinc-950/30 dark:to-emerald-950/20",
@@ -75,60 +84,84 @@ const templateSectionShellBase: Record<TemplateSlug, string> = {
     "dark:hover:border-emerald-400/35 dark:hover:shadow-[0_0_32px_-12px_oklch(0.65_0.18_155/35%)]",
   ].join(" "),
   bold: [
-    "group/section rounded-none border-2 border-foreground p-6 sm:p-8",
+    "group/section rounded-none border-2 border-foreground",
+    shellPadding,
     "bg-gradient-to-br from-background via-muted/20 to-background",
     "shadow-[4px_4px_0_0_var(--foreground)]",
     shellTransition,
     "hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[6px_6px_0_0_var(--foreground)]",
   ].join(" "),
+  aurora: [
+    "group/section rounded-2xl border border-cyan-500/15",
+    shellPadding,
+    "bg-gradient-to-br from-cyan-500/[0.06] via-background/95 to-violet-500/[0.08]",
+    "shadow-[0_0_40px_-20px_oklch(0.7_0.15_195/35%)] backdrop-blur-sm",
+    shellTransition,
+    "hover:border-violet-400/30 hover:shadow-[0_0_56px_-16px_oklch(0.6_0.22_300/40%)]",
+  ].join(" "),
 };
 
 const templateSectionShellAccent: Record<TemplateSlug, string> = {
   modern: [
-    "group/section rounded-2xl border border-violet-500/12 p-6 sm:p-8",
+    "group/section rounded-2xl border border-violet-500/12",
+    shellPadding,
     "bg-gradient-to-bl from-violet-500/[0.07] via-background/80 to-primary/[0.05]",
     "shadow-[var(--shadow-card)] backdrop-blur-sm",
     shellTransition,
     "hover:border-violet-500/25",
   ].join(" "),
   minimal: [
-    "group/section rounded-xl border border-transparent p-6 sm:p-8",
+    "group/section rounded-xl border border-transparent",
+    shellPadding,
     "bg-gradient-to-b from-background via-muted/15 to-muted/25",
     "ring-1 ring-border/30",
     shellTransition,
     "hover:ring-border/50",
   ].join(" "),
   professional: [
-    "group/section rounded-xl border-l-4 border-l-primary/40 border border-border/50 p-6 sm:p-8 pl-7",
+    "group/section rounded-xl border-l-4 border-l-primary/40 border border-border/50 pl-7 sm:pl-9",
+    shellPadding,
     "bg-gradient-to-r from-primary/[0.04] via-card/40 to-transparent",
     shellTransition,
     "hover:border-l-primary/60",
   ].join(" "),
   creative: [
-    "group/section rounded-2xl border border-sky-500/15 p-6 sm:p-8",
+    "group/section rounded-2xl border border-sky-500/15",
+    shellPadding,
     "bg-gradient-to-tr from-sky-500/[0.06] via-background to-primary/[0.05]",
     "shadow-md shadow-sky-500/5",
     shellTransition,
     "hover:border-sky-500/30",
   ].join(" "),
   elegant: [
-    "group/section rounded-none border border-amber-500/10 p-6 sm:p-8",
+    "group/section rounded-none border border-amber-500/10",
+    shellPadding,
     "bg-gradient-to-tl from-orange-400/[0.04] via-background to-amber-500/[0.06]",
     shellTransition,
     "hover:border-amber-500/25",
   ].join(" "),
   developer: [
-    "group/section rounded-xl border p-6 sm:p-8",
+    "group/section rounded-xl border",
+    shellPadding,
     "border-emerald-500/20 bg-gradient-to-tr from-slate-50 via-emerald-50/60 to-white",
     "dark:border-emerald-500/15 dark:from-emerald-950/30 dark:via-zinc-900/40 dark:to-zinc-950/50",
     shellTransition,
     "hover:border-emerald-600/35 dark:hover:border-emerald-400/30",
   ].join(" "),
   bold: [
-    "group/section rounded-none border-2 border-foreground bg-foreground/[0.03] p-6 sm:p-8",
+    "group/section rounded-none border-2 border-foreground bg-foreground/[0.03]",
+    shellPadding,
     "shadow-[6px_6px_0_0_var(--foreground)]",
     shellTransition,
     "hover:bg-foreground/[0.05]",
+  ].join(" "),
+  aurora: [
+    "group/section rounded-2xl border border-violet-500/12",
+    shellPadding,
+    "bg-gradient-to-bl from-violet-500/[0.07] via-background/90 to-cyan-500/[0.06]",
+    "shadow-[var(--shadow-card)] backdrop-blur-sm",
+    shellTransition,
+    "hover:border-cyan-400/25",
   ].join(" "),
 };
 
@@ -221,6 +254,18 @@ export const templateBodyStyles: Record<TemplateSlug, string> = {
     "[&_[data-slot=badge]]:rounded-none [&_[data-slot=badge]]:border-2 [&_[data-slot=badge]]:border-foreground [&_[data-slot=badge]]:bg-foreground [&_[data-slot=badge]]:font-bold [&_[data-slot=badge]]:uppercase [&_[data-slot=badge]]:text-background",
     "[&_form]:border-2 [&_form]:border-foreground [&_form]:bg-background [&_form]:p-6 [&_form]:shadow-[4px_4px_0_0_var(--foreground)]",
   ].join(" "),
+  aurora: [
+    "[&_section]:scroll-mt-24 [&_section]:relative",
+    "[&_section_h2]:relative [&_section_h2]:z-[1] [&_section_h2]:mb-8 [&_section_h2]:text-2xl [&_section_h2]:font-bold [&_section_h2]:tracking-tight sm:[&_section_h2]:text-3xl",
+    "[&_section_h2]:bg-gradient-to-r [&_section_h2]:from-cyan-700 [&_section_h2]:via-teal-600 [&_section_h2]:to-violet-600 [&_section_h2]:bg-clip-text [&_section_h2]:text-transparent dark:[&_section_h2]:from-cyan-300 dark:[&_section_h2]:via-teal-200 dark:[&_section_h2]:to-violet-300",
+    "[&_section_h2]:after:absolute [&_section_h2]:after:-bottom-2 [&_section_h2]:after:left-0 [&_section_h2]:after:h-1 [&_section_h2]:after:w-14 [&_section_h2]:after:rounded-full [&_section_h2]:after:bg-gradient-to-r [&_section_h2]:after:from-cyan-500 [&_section_h2]:after:to-violet-500 [&_section_h2]:after:transition-all [&_section_h2]:after:duration-500 [&_section_h2]:after:content-['']",
+    "group-hover/section:[&_section_h2]:after:w-24",
+    "[&_.rounded-xl.border]:rounded-2xl [&_.rounded-xl.border]:border-cyan-500/15 [&_.rounded-xl.border]:bg-card/70 [&_.rounded-xl.border]:backdrop-blur-sm [&_.rounded-xl.border]:shadow-[var(--shadow-card)]",
+    "[&_.rounded-xl.border]:transition-all [&_.rounded-xl.border]:duration-500 [&_.rounded-xl.border]:hover:-translate-y-1 [&_.rounded-xl.border]:hover:border-violet-400/30 [&_.rounded-xl.border]:hover:shadow-[0_0_32px_-12px_oklch(0.6_0.22_300/35%)]",
+    "[&_[data-slot=badge]]:rounded-full [&_[data-slot=badge]]:border [&_[data-slot=badge]]:border-cyan-500/25 [&_[data-slot=badge]]:bg-gradient-to-r [&_[data-slot=badge]]:from-cyan-500/10 [&_[data-slot=badge]]:to-violet-500/10 [&_[data-slot=badge]]:text-cyan-800 dark:[&_[data-slot=badge]]:text-cyan-200",
+    "[&_[data-slot=badge]]:transition-all [&_[data-slot=badge]]:duration-300 [&_[data-slot=badge]]:hover:from-cyan-500/20 [&_[data-slot=badge]]:hover:to-violet-500/20 [&_[data-slot=badge]]:hover:scale-105",
+    "[&_form]:rounded-2xl [&_form]:border [&_form]:border-cyan-500/20 [&_form]:bg-gradient-to-br [&_form]:from-cyan-500/[0.04] [&_form]:to-violet-500/[0.06] [&_form]:p-6 [&_form]:backdrop-blur-sm",
+  ].join(" "),
 };
 
 /** @deprecated Use TemplateSeparator component instead */
@@ -236,4 +281,6 @@ export const templateSeparatorStyles: Record<TemplateSlug, string> = {
   developer:
     "h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent",
   bold: "h-1 bg-foreground",
+  aurora:
+    "h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent",
 };

@@ -92,8 +92,10 @@ export function ProfessionalLayout({
                 <Briefcase className="h-4 w-4 text-primary" />
                 Professional Profile
               </div>
-              <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-                {profile.fullName || "Your Name"}
+              <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.75rem]">
+                <span className="bg-gradient-to-r from-foreground to-foreground/75 bg-clip-text text-transparent">
+                  {profile.fullName || "Your Name"}
+                </span>
               </h1>
               <p className="mt-2 text-xl font-medium text-foreground/85">
                 {profile.title || "Your professional title"}

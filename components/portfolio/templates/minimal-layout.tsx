@@ -7,6 +7,7 @@ import {
   ContactLinks,
   PortfolioBody,
   PortfolioFooter,
+  TemplateNav,
 } from "@/components/portfolio/templates/shared";
 import { templateRootStyles } from "@/components/portfolio/templates/template-motion";
 import type { PortfolioTemplateLayoutProps } from "@/components/portfolio/templates/types";
@@ -107,6 +108,7 @@ export function MinimalLayout({
         </div>
       </section>
 
+      <TemplateNav template="minimal" />
       <PortfolioBody
         template="minimal"
         className="mx-auto max-w-2xl space-y-16 px-4 py-16 sm:px-6"

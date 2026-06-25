@@ -19,10 +19,11 @@ const PRO_TEMPLATES: TemplateSlug[] = [
   "creative",
   "elegant",
   "developer",
+  "aurora",
 ];
 
 const shellTransition =
-  "transition-all duration-500 ease-out hover:shadow-md motion-reduce:transition-none";
+  "transition-all duration-500 ease-out hover:shadow-lg motion-reduce:transition-none";
 
 export function isProTemplate(template: TemplateSlug): boolean {
   return PRO_TEMPLATES.includes(template);
@@ -99,23 +100,33 @@ const proSectionAnimations: Record<
     contact: "animate-template-zoom-in",
   },
   minimal: {
-    "intro-video": "animate-template-reveal",
+    "intro-video": "animate-template-blur-in",
     skills: "animate-template-reveal",
-    projects: "animate-template-reveal",
-    experience: "animate-template-reveal",
+    projects: "animate-template-rise",
+    experience: "animate-template-slide-in",
     education: "animate-template-reveal",
-    certifications: "animate-template-reveal",
-    testimonials: "animate-template-reveal",
-    contact: "animate-template-reveal",
+    certifications: "animate-template-rise",
+    testimonials: "animate-template-blur-in",
+    contact: "animate-template-slide-in",
   },
   bold: {
-    "intro-video": "animate-template-rise",
-    skills: "animate-template-rise",
-    projects: "animate-template-rise",
+    "intro-video": "animate-template-zoom-in",
+    skills: "animate-template-slide-in",
+    projects: "animate-template-zoom-in",
     experience: "animate-template-rise",
-    education: "animate-template-rise",
+    education: "animate-template-slide-in",
     certifications: "animate-template-rise",
-    testimonials: "animate-template-rise",
+    testimonials: "animate-template-zoom-in",
+    contact: "animate-template-slide-in",
+  },
+  aurora: {
+    "intro-video": "animate-template-blur-in",
+    skills: "animate-template-sweep-in",
+    projects: "animate-template-zoom-in",
+    experience: "animate-template-blur-in",
+    education: "animate-template-rise",
+    certifications: "animate-template-sweep-in",
+    testimonials: "animate-template-blur-in",
     contact: "animate-template-rise",
   },
 };
@@ -212,24 +223,58 @@ const proSectionShells: Record<TemplateSlug, Record<PortfolioSectionId, string>>
       "rounded-lg border border-emerald-500/30 bg-emerald-50/50 p-6 sm:p-8 font-mono text-sm dark:bg-zinc-900/70",
   },
   minimal: {
-    "intro-video": "",
-    skills: "",
-    projects: "",
-    experience: "",
-    education: "",
-    certifications: "",
-    testimonials: "",
-    contact: "",
+    "intro-video":
+      "rounded-xl border border-border/50 bg-gradient-to-b from-muted/25 via-background to-background p-7 sm:p-10 hover:border-foreground/20",
+    skills:
+      "rounded-lg border border-border/40 bg-muted/15 p-7 sm:p-10 hover:bg-muted/25 hover:border-border/60",
+    projects:
+      "rounded-xl border border-border/50 bg-gradient-to-b from-background via-muted/10 to-muted/20 p-7 sm:p-10 hover:border-foreground/15",
+    experience:
+      "rounded-lg border-y border-border/60 bg-muted/10 px-7 py-9 sm:px-10 sm:py-11 hover:bg-muted/20",
+    education:
+      "rounded-lg border border-border/40 bg-background p-7 sm:p-10 hover:border-foreground/20",
+    certifications:
+      "rounded-lg border border-border/40 bg-muted/10 p-7 sm:p-10 hover:bg-muted/20",
+    testimonials:
+      "rounded-xl border border-border/50 bg-gradient-to-b from-muted/15 to-background p-7 sm:p-10",
+    contact:
+      "rounded-lg border border-border/60 bg-muted/15 p-7 sm:p-10 hover:border-foreground/25",
   },
   bold: {
-    "intro-video": "",
-    skills: "",
-    projects: "",
-    experience: "",
-    education: "",
-    certifications: "",
-    testimonials: "",
-    contact: "",
+    "intro-video":
+      "rounded-none border-2 border-foreground bg-foreground/[0.04] p-7 sm:p-10 shadow-[6px_6px_0_0_var(--foreground)] hover:translate-x-0.5 hover:translate-y-0.5",
+    skills:
+      "rounded-none border-2 border-foreground bg-background p-7 sm:p-10 shadow-[4px_4px_0_0_var(--foreground)] hover:shadow-[6px_6px_0_0_var(--foreground)]",
+    projects:
+      "rounded-none border-4 border-foreground bg-gradient-to-br from-muted/30 via-background to-muted/20 p-7 sm:p-10 shadow-[8px_8px_0_0_var(--foreground)] hover:-translate-y-0.5",
+    experience:
+      "rounded-none border-l-8 border-l-foreground border border-foreground/30 bg-muted/20 p-7 sm:p-10 pl-8 hover:border-l-foreground",
+    education:
+      "rounded-none border-2 border-foreground bg-background p-7 sm:p-10 shadow-[4px_4px_0_0_var(--foreground)]",
+    certifications:
+      "rounded-none border-2 border-dashed border-foreground bg-background p-7 sm:p-10 hover:bg-foreground/[0.03]",
+    testimonials:
+      "rounded-none border-2 border-foreground bg-foreground/[0.05] p-7 sm:p-10 shadow-[6px_6px_0_0_var(--foreground)]",
+    contact:
+      "rounded-none border-4 border-foreground bg-background p-7 sm:p-10 shadow-[8px_8px_0_0_var(--foreground)] hover:translate-x-0.5 hover:translate-y-0.5",
+  },
+  aurora: {
+    "intro-video":
+      "rounded-3xl border border-cyan-400/25 bg-gradient-to-br from-cyan-500/10 via-slate-900/5 to-violet-500/10 p-7 sm:p-10 shadow-[0_0_60px_-24px_oklch(0.7_0.15_195/50%)] backdrop-blur-md hover:border-violet-400/35",
+    skills:
+      "rounded-2xl border border-teal-500/15 bg-gradient-to-br from-teal-500/[0.08] via-background/95 to-cyan-500/[0.05] p-7 sm:p-10 hover:border-cyan-400/30 hover:shadow-[0_0_48px_-20px_oklch(0.7_0.15_195/35%)]",
+    projects:
+      "rounded-3xl border border-violet-500/20 bg-gradient-to-bl from-background via-violet-500/[0.04] to-cyan-500/[0.08] p-7 sm:p-10 shadow-[0_24px_60px_-32px_oklch(0.6_0.22_300/30%)] hover:-translate-y-0.5 hover:border-cyan-400/30",
+    experience:
+      "rounded-2xl border-l-4 border-l-cyan-400/50 border border-cyan-500/10 bg-gradient-to-r from-cyan-500/[0.05] via-background/90 to-transparent p-7 sm:p-10 pl-8 hover:border-l-violet-400/70",
+    education:
+      "rounded-2xl border border-violet-500/12 bg-gradient-to-tr from-violet-500/[0.05] to-background p-7 sm:p-10 hover:border-cyan-400/25",
+    certifications:
+      "rounded-2xl border border-teal-500/15 bg-gradient-to-tr from-teal-500/[0.05] to-background p-7 sm:p-10 hover:border-violet-400/25",
+    testimonials:
+      "rounded-3xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.06] via-background to-cyan-500/[0.04] p-7 sm:p-10",
+    contact:
+      "rounded-2xl border border-cyan-400/25 bg-gradient-to-br from-cyan-500/[0.05] via-background to-violet-500/[0.07] p-7 sm:p-10 backdrop-blur-sm",
   },
 };
 
@@ -315,6 +360,21 @@ const proSectionInnerStyles: Partial<
     contact:
       "[&_[data-portfolio-section=contact]_form]:font-mono [&_[data-portfolio-section=contact]_form]:text-sm [&_[data-portfolio-section=contact]_form]:border-emerald-500/30",
   },
+  aurora: {
+    skills:
+      "[&_[data-portfolio-section=skills]_.flex-wrap]:gap-3 [&_[data-portfolio-section=skills]_[data-slot=badge]]:rounded-full [&_[data-portfolio-section=skills]_[data-slot=badge]]:px-4",
+    projects:
+      "[&_[data-portfolio-section=projects]_.grid]:gap-8 [&_[data-portfolio-section=projects]_.group]:rounded-2xl [&_[data-portfolio-section=projects]_.group]:shadow-lg [&_[data-portfolio-section=projects]_.group]:transition-transform [&_[data-portfolio-section=projects]_.group]:duration-500 [&_[data-portfolio-section=projects]_.group]:hover:-translate-y-1",
+    experience:
+      "[&_[data-portfolio-section=experience]_.space-y-6>div]:border-l-2 [&_[data-portfolio-section=experience]_.space-y-6>div]:border-cyan-500/30 [&_[data-portfolio-section=experience]_.space-y-6>div]:pl-6",
+    education: "[&_[data-portfolio-section=education]_.grid]:gap-5",
+    certifications:
+      "[&_[data-portfolio-section=certifications]_.grid>div]:overflow-hidden [&_[data-portfolio-section=certifications]_.grid>div]:rounded-2xl [&_[data-portfolio-section=certifications]_.grid>div]:border [&_[data-portfolio-section=certifications]_.grid>div]:border-cyan-500/10",
+    testimonials:
+      "[&_[data-portfolio-section=testimonials]_blockquote]:text-base [&_[data-portfolio-section=testimonials]_.grid]:gap-6",
+    contact:
+      "[&_[data-portfolio-section=contact]_form]:rounded-2xl [&_[data-portfolio-section=contact]_form]:border-cyan-400/25 [&_[data-portfolio-section=contact]_form]:shadow-sm",
+  },
 };
 
 export function getSectionAnimationClass(
@@ -333,6 +393,17 @@ export function getProSectionShell(
   template: TemplateSlug,
   sectionId: PortfolioSectionId
 ): string {
+  const shell = proSectionShells[template]?.[sectionId];
+  if (!shell) return "";
+  return cn("group/section", shell, shellTransition);
+}
+
+/** Section-specific shells for free templates (bold, minimal) */
+export function getFreeSectionShell(
+  template: TemplateSlug,
+  sectionId: PortfolioSectionId
+): string {
+  if (!isFreeTemplate(template)) return "";
   const shell = proSectionShells[template]?.[sectionId];
   if (!shell) return "";
   return cn("group/section", shell, shellTransition);
@@ -392,6 +463,17 @@ const proSectionHeadingAccents: Partial<
     testimonials: "[&_section_h2]:before:content-['/*_'] [&_section_h2]:after:content-['_*/']",
     contact: "[&_section_h2]:before:content-['async_'] [&_section_h2]:after:content-['()']",
     "intro-video": "[&_section_h2]:text-emerald-500",
+  },
+  aurora: {
+    skills: "[&_section_h2]:after:from-teal-500 [&_section_h2]:after:to-cyan-500",
+    projects: "[&_section_h2]:text-3xl [&_section_h2]:after:w-20 [&_section_h2]:after:from-cyan-500 [&_section_h2]:after:to-violet-500",
+    experience: "[&_section_h2]:after:from-cyan-500 [&_section_h2]:after:to-violet-500/60",
+    education: "[&_section_h2]:after:from-violet-500/80 [&_section_h2]:after:to-transparent",
+    certifications: "[&_section_h2]:after:from-teal-500/80 [&_section_h2]:after:to-transparent",
+    testimonials: "[&_section_h2]:font-semibold",
+    contact: "[&_section_h2]:after:w-24",
+    "intro-video":
+      "[&_section_h2]:bg-gradient-to-r [&_section_h2]:from-cyan-400 [&_section_h2]:to-violet-400 [&_section_h2]:bg-clip-text [&_section_h2]:text-transparent",
   },
 };
 
