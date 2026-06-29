@@ -738,6 +738,15 @@ export interface JobDescriptionTailorResult {
   provider: string;
 }
 
+export type CoverLetterTone = "professional" | "enthusiastic" | "concise";
+
+export interface CoverLetterResult {
+  subject_line: string;
+  content: string;
+  highlights: string[];
+  provider: string;
+}
+
 export interface AIContentResult {
   content: string;
   provider: string;

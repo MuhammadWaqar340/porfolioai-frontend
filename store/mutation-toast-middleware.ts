@@ -29,6 +29,7 @@ const SKIP_SUCCESS_TOAST = new Set([
   "pageChat",
   "portfolioReview",
   "tailorJobDescription",
+  "generateCoverLetter",
   "generateExperienceDescription",
   "suggestSkills",
   "suggestTitle",

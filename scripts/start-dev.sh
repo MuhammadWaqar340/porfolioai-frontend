@@ -6,7 +6,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BACKEND_DIR="$(cd "$ROOT/../backend" && pwd)"
+if [[ -d "$ROOT/../backend" ]]; then
+  BACKEND_DIR="$(cd "$ROOT/../backend" && pwd)"
+elif [[ -d "$ROOT/../PortfolioAI-Backend" ]]; then
+  BACKEND_DIR="$(cd "$ROOT/../PortfolioAI-Backend" && pwd)"
+else
+  BACKEND_DIR=""
+fi
 API_PORT="${API_PORT:-8001}"
 API_HOST="${API_HOST:-127.0.0.1}"
 OLLAMA_HOST="${OLLAMA_HOST:-127.0.0.1:11434}"
@@ -34,8 +40,8 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-if [[ ! -d "${BACKEND_DIR}" ]]; then
-  echo "Backend not found at ${BACKEND_DIR}"
+if [[ -z "${BACKEND_DIR}" || ! -d "${BACKEND_DIR}" ]]; then
+  echo "Backend not found. Expected ../backend or ../PortfolioAI-Backend next to the frontend."
   exit 1
 fi
 
@@ -45,9 +51,9 @@ if ! command -v ollama >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ ! -x "${BACKEND_DIR}/.venv/bin/uvicorn" ]]; then
+if [[ ! -x "${BACKEND_DIR}/.venv/bin/python3" ]]; then
   echo "Backend venv not found. Run from ${BACKEND_DIR}:"
-  echo "  python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
+  echo "  python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
   exit 1
 fi
 
@@ -83,9 +89,7 @@ fi
 echo "Starting backend at http://${API_HOST}:${API_PORT} ..."
 (
   cd "${BACKEND_DIR}"
-  # shellcheck disable=SC1091
-  source .venv/bin/activate
-  exec uvicorn app.main:app --reload --host "${API_HOST}" --port "${API_PORT}"
+  exec .venv/bin/python3 -m uvicorn app.main:app --reload --host "${API_HOST}" --port "${API_PORT}"
 ) &
 BACKEND_PID=$!
 

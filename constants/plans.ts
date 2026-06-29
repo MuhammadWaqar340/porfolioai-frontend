@@ -62,6 +62,7 @@ export const PLAN_FEATURES = {
   pro: [
     "All 8 templates (includes Modern & Aurora)",
     "Unlimited AI assistance",
+    "AI cover letter generator",
     "Video introduction section",
     "Full analytics & referrers",
     "Portfolio variants for job targeting",

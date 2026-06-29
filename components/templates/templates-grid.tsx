@@ -84,7 +84,7 @@ export function TemplatesGrid({ selectable }: TemplatesGridProps) {
         <ProUpgradeCard
           compact
           title="Unlock all templates"
-          description="Free includes Minimal and Bold. Upgrade to Pro for Modern, Professional, Creative, Elegant, and Developer."
+          description="Free includes Minimal and Bold. Upgrade to Pro for Modern, Professional, Creative, Elegant, Developer, and Aurora."
         />
       ) : null}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

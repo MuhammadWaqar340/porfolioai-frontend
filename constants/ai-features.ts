@@ -29,4 +29,11 @@ export const AI_FEATURES: AIFeature[] = [
       "Get AI-powered suggestions to improve your portfolio's impact and completeness.",
     icon: "search",
   },
+  {
+    id: "cover-letter",
+    title: "AI Cover Letter Generator",
+    description:
+      "Create a tailored cover letter from your portfolio and a job posting in seconds.",
+    icon: "file-text",
+  },
 ];

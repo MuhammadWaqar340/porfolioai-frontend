@@ -27,6 +27,8 @@ import type {
   PlatformPublicConfig,
   PortfolioReviewResult,
   JobDescriptionTailorResult,
+  CoverLetterResult,
+  CoverLetterTone,
   MeetingAvailability,
   MeetingBookResult,
   MeetingSettings,
@@ -882,6 +884,24 @@ export const portfolioApi = baseApi.injectEndpoints({
       }),
       transformResponse: (r: ApiSuccess<JobDescriptionTailorResult>) => unwrapApi(r),
     }),
+    generateCoverLetter: builder.mutation<
+      CoverLetterResult,
+      {
+        company_name: string;
+        job_title: string;
+        job_description: string;
+        tone?: CoverLetterTone;
+        additional_notes?: string;
+        target_role?: string;
+      }
+    >({
+      query: (body) => ({
+        url: "/ai/generate/cover-letter",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<CoverLetterResult>) => unwrapApi(r),
+    }),
     generateExperienceDescription: builder.mutation<
       AIContentResult,
       {
@@ -1177,6 +1197,7 @@ export const {
   useAiChatMutation,
   usePortfolioReviewMutation,
   useTailorJobDescriptionMutation,
+  useGenerateCoverLetterMutation,
   useGenerateExperienceDescriptionMutation,
   useSuggestSkillsMutation,
   useSuggestTitleMutation,

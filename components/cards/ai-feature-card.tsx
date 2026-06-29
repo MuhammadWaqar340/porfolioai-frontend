@@ -1,5 +1,6 @@
 import {
   Briefcase,
+  FileText,
   Search,
   Upload,
   User,
@@ -14,6 +15,7 @@ const iconMap: Record<string, LucideIcon> = {
   briefcase: Briefcase,
   upload: Upload,
   search: Search,
+  "file-text": FileText,
 };
 
 interface AIFeatureCardProps {

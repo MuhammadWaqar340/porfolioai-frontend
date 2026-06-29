@@ -8,6 +8,7 @@ import { AICopilotProgress } from "@/components/ai/ai-copilot-progress";
 import { AIPageNav } from "@/components/ai/ai-page-nav";
 import { AIPageSection } from "@/components/ai/ai-page-section";
 import { JobDescriptionTailorPanel } from "@/components/ai/job-description-tailor-panel";
+import { CoverLetterGeneratorPanel } from "@/components/ai/cover-letter-generator-panel";
 import { PortfolioReviewPanel } from "@/components/ai/portfolio-review-panel";
 import { GitHubImportPanel } from "@/components/ai/github-import-panel";
 import { ResumeImportPanel } from "@/components/ai/resume-import-panel";
@@ -34,7 +35,7 @@ export function AIAssistancePage() {
       {!canUseAI ? (
         <ProUpgradeCard
           title="AI is a Pro feature"
-          description="Upgrade to unlock resume import, portfolio review, job tailoring, copilot chat, and AI writing tools across the app."
+          description="Upgrade to unlock resume import, portfolio review, job tailoring, cover letters, copilot chat, and AI writing tools across the app."
         />
       ) : null}
 
@@ -70,6 +71,14 @@ export function AIAssistancePage() {
         >
           <PortfolioReviewPanel />
           <JobDescriptionTailorPanel />
+        </AIPageSection>
+
+        <AIPageSection
+          id="apply"
+          title="Apply to roles"
+          description="Generate application materials tailored to a specific company and job posting."
+        >
+          <CoverLetterGeneratorPanel />
         </AIPageSection>
 
         <AIPageSection
