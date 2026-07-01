@@ -99,6 +99,18 @@ export function JobDescriptionTailorPanel() {
         </Button>
 
         {result ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            render={<Link href="/applications/apply" />}
+            nativeButton={false}
+          >
+            Turn into application
+          </Button>
+        ) : null}
+
+        {result ? (
           <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">Fit: {result.fit_score}/100</Badge>

@@ -39,6 +39,8 @@ export function useSubscription() {
       private_share_links: isPro,
       unlimited_ai: isPro,
       meet_booking: isPro,
+      job_application_tracker: true,
+      unlimited_job_applications: isPro,
     },
     canUseTemplate(slug: string) {
       return (

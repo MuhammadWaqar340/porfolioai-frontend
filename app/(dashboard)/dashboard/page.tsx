@@ -1,6 +1,7 @@
-import { ArrowRight, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { RecentProjects } from "@/components/projects/recent-projects";
+import { ApplicationsSummaryCard } from "@/components/dashboard/applications-summary-card";
 import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 import { DashboardStatsGrid } from "@/components/dashboard/dashboard-stats-grid";
 import { InactivityNudgeBanner } from "@/components/dashboard/inactivity-nudge-banner";
@@ -41,25 +42,11 @@ export default function DashboardPage() {
 
       <PortfolioReviewCard />
 
+      <ApplicationsSummaryCard />
+
       <DashboardOverview />
 
-      <Card>
-        <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle>Recent Projects</CardTitle>
-          <Link
-            href="/projects"
-            className="flex items-center gap-1 text-sm text-primary hover:underline"
-          >
-            View all
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </CardHeader>
-        <CardContent>
-          <div className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <RecentProjects limit={3} />
-          </div>
-        </CardContent>
-      </Card>
+      <RecentProjects limit={3} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

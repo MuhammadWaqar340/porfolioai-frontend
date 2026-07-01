@@ -76,7 +76,7 @@ export function AIAssistancePage() {
         <AIPageSection
           id="apply"
           title="Apply to roles"
-          description="Generate application materials tailored to a specific company and job posting."
+          description="Generate application materials tailored to your portfolio."
         >
           <CoverLetterGeneratorPanel />
         </AIPageSection>

@@ -96,12 +96,14 @@ export function AnalyticsPageClient() {
         />
       ) : (
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
+        <Card className="overflow-hidden border-border/80 lg:col-span-2">
+          <CardHeader className="border-b bg-muted/10">
             <CardTitle>Views over time</CardTitle>
-            <CardDescription>Daily portfolio opens for the last 30 days.</CardDescription>
+            <CardDescription>
+              Daily portfolio opens for the last 30 days. Hover a bar for exact counts.
+            </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <ViewsOverTimeChart data={analytics.views_by_day ?? []} />
           </CardContent>
         </Card>

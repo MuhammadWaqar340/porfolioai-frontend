@@ -1,6 +1,7 @@
 import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { isApiHostedAsset } from "@/lib/api/asset-url";
+import { projectPlaceholderHue } from "@/lib/project-utils";
 import { cn } from "@/lib/utils";
 
 interface ProjectImageProps {
@@ -26,26 +27,39 @@ export function ProjectImage({
     isApiHostedAsset(src);
 
   if (!src) {
-    const initial = (title || alt).trim().charAt(0).toUpperCase();
+    const label = (title || alt).trim();
+    const initial = label.charAt(0).toUpperCase();
+    const hue = projectPlaceholderHue(label);
 
     return (
       <div
         className={cn(
-          "relative flex aspect-video items-center justify-center overflow-hidden bg-gradient-to-br from-primary/12 via-muted/80 to-violet-500/10",
+          "relative flex aspect-video items-center justify-center overflow-hidden bg-muted/60",
           className
         )}
+        style={{
+          backgroundImage: `linear-gradient(135deg, hsl(${hue} 62% 48% / 0.22) 0%, hsl(${(hue + 48) % 360} 55% 38% / 0.12) 45%, hsl(${(hue + 96) % 360} 50% 32% / 0.08) 100%)`,
+        }}
       >
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-25"
           style={{
             backgroundImage:
               "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
-            backgroundSize: "20px 20px",
+            backgroundSize: "18px 18px",
           }}
           aria-hidden
         />
+        <div
+          className="absolute -right-6 -top-6 h-28 w-28 rounded-full blur-2xl"
+          style={{ backgroundColor: `hsl(${hue} 70% 55% / 0.25)` }}
+          aria-hidden
+        />
         {initial ? (
-          <span className="relative text-5xl font-bold tracking-tight text-primary/35">
+          <span
+            className="relative text-5xl font-bold tracking-tight"
+            style={{ color: `hsl(${hue} 55% 72% / 0.55)` }}
+          >
             {initial}
           </span>
         ) : (

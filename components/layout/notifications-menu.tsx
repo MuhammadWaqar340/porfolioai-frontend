@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import { Bell, CheckCheck, Clock3, Eye, Loader2, Quote, Trash2, X } from "lucide-react";
+import { Bell, CheckCheck, Clock3, Eye, KanbanSquare, Loader2, Quote, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +32,8 @@ function notificationIcon(type: string) {
       return <Quote className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
     case "inactivity_nudge":
       return <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />;
+    case "application_follow_up":
+      return <KanbanSquare className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
     default:
       return <Bell className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />;
   }

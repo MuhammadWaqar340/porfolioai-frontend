@@ -37,6 +37,11 @@ import type {
   CertificationSuggestionResult,
   EducationSuggestionResult,
   GitHubImportResult,
+  JobApplication,
+  JobApplicationStats,
+  JobApplicationStatus,
+  ApplyWizardResult,
+  SuggestVariantFromJobResult,
   PortfolioFeedbackItem,
   PortfolioContactMessage,
   PortfolioSettings,
@@ -735,6 +740,105 @@ export const portfolioApi = baseApi.injectEndpoints({
       query: (id) => ({ url: `/portfolio/share-links/${id}`, method: "DELETE" }),
       invalidatesTags: ["ShareLinks"],
     }),
+    getJobApplications: builder.query<JobApplication[], { status?: JobApplicationStatus } | void>({
+      query: (params) => ({
+        url: "/applications",
+        params: params?.status ? { status: params.status } : undefined,
+      }),
+      transformResponse: (r: ApiSuccess<JobApplication[]>) => unwrapApi(r),
+      providesTags: ["JobApplications"],
+    }),
+    getJobApplicationStats: builder.query<JobApplicationStats, void>({
+      query: () => "/applications/stats",
+      transformResponse: (r: ApiSuccess<JobApplicationStats>) => unwrapApi(r),
+      providesTags: ["JobApplications"],
+    }),
+    createJobApplication: builder.mutation<
+      JobApplication,
+      {
+        company_name: string;
+        job_title: string;
+        recruiter_email?: string;
+        job_url?: string;
+        job_description?: string;
+        status?: JobApplicationStatus;
+        fit_score?: number;
+        notes?: string;
+        applied_at?: string | null;
+        follow_up_at?: string | null;
+        portfolio_variant_id?: string | null;
+        share_link_id?: string | null;
+        cover_letter_subject?: string;
+        cover_letter_content?: string;
+      }
+    >({
+      query: (body) => ({ url: "/applications", method: "POST", body }),
+      transformResponse: (r: ApiSuccess<JobApplication>) => unwrapApi(r),
+      invalidatesTags: ["JobApplications"],
+    }),
+    updateJobApplication: builder.mutation<
+      JobApplication,
+      {
+        id: string;
+        company_name?: string;
+        job_title?: string;
+        recruiter_email?: string | null;
+        job_url?: string | null;
+        job_description?: string | null;
+        status?: JobApplicationStatus;
+        fit_score?: number | null;
+        notes?: string | null;
+        applied_at?: string | null;
+        follow_up_at?: string | null;
+        portfolio_variant_id?: string | null;
+        share_link_id?: string | null;
+        cover_letter_subject?: string | null;
+        cover_letter_content?: string | null;
+      }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/applications/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<JobApplication>) => unwrapApi(r),
+      invalidatesTags: ["JobApplications"],
+    }),
+    deleteJobApplication: builder.mutation<void, string>({
+      query: (id) => ({ url: `/applications/${id}`, method: "DELETE" }),
+      invalidatesTags: ["JobApplications"],
+    }),
+    completeApplyWizard: builder.mutation<
+      ApplyWizardResult,
+      {
+        company_name: string;
+        job_title: string;
+        recruiter_email?: string;
+        job_url?: string;
+        job_description: string;
+        status?: JobApplicationStatus;
+        fit_score?: number;
+        notes?: string;
+        create_variant?: boolean;
+        variant?: {
+          name: string;
+          slug: string;
+          title_override?: string;
+          about_override?: string;
+          featured_project_ids?: string[];
+        };
+        existing_variant_id?: string;
+        cover_letter_subject: string;
+        cover_letter_content: string;
+        create_share_link?: boolean;
+        share_link_label?: string;
+        share_link_expires_in_days?: number;
+      }
+    >({
+      query: (body) => ({ url: "/applications/apply-wizard", method: "POST", body }),
+      transformResponse: (r: ApiSuccess<ApplyWizardResult>) => unwrapApi(r),
+      invalidatesTags: ["JobApplications", "PortfolioVariants", "ShareLinks"],
+    }),
     getContactMessages: builder.query<PortfolioContactMessage[], void>({
       query: () => "/portfolio/messages",
       transformResponse: (r: ApiSuccess<PortfolioContactMessage[]>) => unwrapApi(r),
@@ -901,6 +1005,22 @@ export const portfolioApi = baseApi.injectEndpoints({
         body,
       }),
       transformResponse: (r: ApiSuccess<CoverLetterResult>) => unwrapApi(r),
+    }),
+    suggestVariantFromJob: builder.mutation<
+      SuggestVariantFromJobResult,
+      {
+        company_name: string;
+        job_title: string;
+        job_description: string;
+        target_role?: string;
+      }
+    >({
+      query: (body) => ({
+        url: "/ai/suggest/variant-from-job",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<SuggestVariantFromJobResult>) => unwrapApi(r),
     }),
     generateExperienceDescription: builder.mutation<
       AIContentResult,
@@ -1180,6 +1300,12 @@ export const {
   useGetShareLinksQuery,
   useCreateShareLinkMutation,
   useDeleteShareLinkMutation,
+  useGetJobApplicationsQuery,
+  useGetJobApplicationStatsQuery,
+  useCreateJobApplicationMutation,
+  useUpdateJobApplicationMutation,
+  useDeleteJobApplicationMutation,
+  useCompleteApplyWizardMutation,
   useGetContactMessagesQuery,
   useDeleteContactMessageMutation,
   useGetPortfolioFeedbackQuery,
@@ -1198,6 +1324,7 @@ export const {
   usePortfolioReviewMutation,
   useTailorJobDescriptionMutation,
   useGenerateCoverLetterMutation,
+  useSuggestVariantFromJobMutation,
   useGenerateExperienceDescriptionMutation,
   useSuggestSkillsMutation,
   useSuggestTitleMutation,

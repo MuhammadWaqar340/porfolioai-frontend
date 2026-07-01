@@ -30,6 +30,8 @@ const SKIP_SUCCESS_TOAST = new Set([
   "portfolioReview",
   "tailorJobDescription",
   "generateCoverLetter",
+  "suggestVariantFromJob",
+  "completeApplyWizard",
   "generateExperienceDescription",
   "suggestSkills",
   "suggestTitle",

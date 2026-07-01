@@ -107,6 +107,7 @@ export const tagTypes = [
   "Notifications",
   "PortfolioVariants",
   "ShareLinks",
+  "JobApplications",
   "PortfolioMessages",
   "PortfolioFeedback",
   "Testimonials",

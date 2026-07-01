@@ -126,6 +126,8 @@ export interface PlanFeatures {
   private_share_links: boolean;
   unlimited_ai: boolean;
   meet_booking: boolean;
+  job_application_tracker: boolean;
+  unlimited_job_applications: boolean;
 }
 
 export interface SubscriptionPlanData {
@@ -631,6 +633,65 @@ export interface PortfolioContactMessage {
   sender_email: string | null;
   message: string;
   created_at: string;
+}
+
+export type JobApplicationStatus =
+  | "saved"
+  | "applied"
+  | "interview"
+  | "offer"
+  | "rejected"
+  | "withdrawn";
+
+export interface JobApplication {
+  id: string;
+  company_name: string;
+  job_title: string;
+  recruiter_email: string | null;
+  job_url: string | null;
+  job_description: string | null;
+  status: JobApplicationStatus;
+  fit_score: number | null;
+  notes: string | null;
+  applied_at: string | null;
+  follow_up_at: string | null;
+  portfolio_variant_id: string | null;
+  share_link_id: string | null;
+  variant_name: string | null;
+  share_url: string | null;
+  cover_letter_subject: string | null;
+  cover_letter_content: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface JobApplicationStats {
+  total: number;
+  active: number;
+  saved: number;
+  applied: number;
+  interview: number;
+  closed: number;
+  applied_this_week: number;
+  follow_ups_due: number;
+  active_limit: number;
+  is_at_active_limit: boolean;
+}
+
+export interface ApplyWizardResult {
+  application: JobApplication;
+  variant: PortfolioVariant | null;
+  share_link: ShareLink | null;
+}
+
+export interface SuggestVariantFromJobResult {
+  variant_name: string;
+  slug: string;
+  title_override: string;
+  about_override: string;
+  featured_project_ids: string[];
+  rationale: string;
+  provider: string;
 }
 
 export interface EducationSuggestionResult {
