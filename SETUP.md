@@ -1,6 +1,6 @@
 # PortfolioAI — Developer Setup Guide
 
-Complete step-by-step instructions for new developers to run **PortfolioAI** locally (backend, frontend, database, and Ollama AI).
+Complete step-by-step instructions for new developers to run **PortfolioAI** locally (backend, frontend, database, and Gemini AI).
 
 ---
 
@@ -11,15 +11,14 @@ Complete step-by-step instructions for new developers to run **PortfolioAI** loc
 3. [Project layout](#3-project-layout)
 4. [PostgreSQL (database)](#4-postgresql-database)
 5. [Backend setup](#5-backend-setup)
-6. [Ollama setup (local AI)](#6-ollama-setup-local-ai)
+6. [Google Gemini AI setup](#6-google-gemini-ai-setup)
 7. [Frontend setup](#7-frontend-setup)
 8. [Run the full stack](#8-run-the-full-stack)
 9. [Verify everything works](#9-verify-everything-works)
 10. [Optional: Google Sign-In](#10-optional-google-sign-in)
 11. [Optional: Google Meet booking](#11-optional-google-meet-booking)
-12. [Optional: Gemini instead of Ollama](#12-optional-gemini-instead-of-ollama)
-13. [Optional: Email (SMTP)](#13-optional-email-smtp)
-14. [Troubleshooting](#14-troubleshooting)
+12. [Optional: Email (SMTP)](#12-optional-email-smtp)
+13. [Troubleshooting](#13-troubleshooting)
 
 ---
 
@@ -28,9 +27,9 @@ Complete step-by-step instructions for new developers to run **PortfolioAI** loc
 | Service | Port | Purpose |
 |---------|------|---------|
 | **Next.js frontend** | 3000 | Dashboard, portfolio builder, public portfolios |
-| **FastAPI backend** | 8001 (dev) | REST API, auth, AI, file uploads |
+| **FastAPI backend** | 8000 (dev) | REST API, auth, AI, file uploads |
 | **PostgreSQL** | 5433 | Database (Docker maps host 5433 → container 5432) |
-| **Ollama** | 11434 | Local LLM for AI features (resume import, copilot, etc.) |
+| **Google Gemini API** | — | Cloud AI for resume import, copilot, portfolio review |
 
 In **development**, Pro features require a Pro subscription (or an explicit bypass flag — see below).
 
@@ -50,9 +49,9 @@ Install these before you start:
 | **Docker Compose** | v2+ | `docker compose version` |
 | **curl** | any | `curl --version` |
 
-**Linux only (Ollama):** `curl`, `sudo` for install script.
-
 **Optional:** [Google Cloud](https://console.cloud.google.com/) account for Google Sign-In and Meet booking.
+
+**AI:** A free [Google AI Studio](https://aistudio.google.com/apikey) API key for Gemini (required for AI features).
 
 ---
 
@@ -63,10 +62,10 @@ After clone, you should have **two sibling folders**:
 ```
 your-workspace/
 ├── AI-powered portfolio/    ← Frontend (Next.js) — open this in your IDE
-└── backend/                 ← Backend (FastAPI)
+└── PortfolioAI-Backend/     ← Backend (FastAPI)
 ```
 
-> If your folders are named differently, adjust paths in the commands below.
+> If your folders are named differently (`backend/` instead of `PortfolioAI-Backend/`), adjust paths in the commands below. The dev script checks both names.
 
 ---
 
@@ -77,7 +76,7 @@ The backend includes Docker Compose for PostgreSQL.
 ### 4.1 Start the database
 
 ```bash
-cd backend
+cd PortfolioAI-Backend
 docker compose up -d
 ```
 
@@ -102,7 +101,7 @@ Database: portfolio_db
 ### 4.3 Stop the database (when needed)
 
 ```bash
-cd backend
+cd PortfolioAI-Backend
 docker compose down
 ```
 
@@ -112,12 +111,12 @@ Data is kept in a Docker volume (`portfolio_pg_data`). To wipe data: `docker com
 
 ## 5. Backend setup
 
-All commands below are from the **`backend/`** directory.
+All commands below are from the **`PortfolioAI-Backend/`** directory.
 
 ### 5.1 Create a virtual environment
 
 ```bash
-cd backend
+cd PortfolioAI-Backend
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 ```
@@ -137,7 +136,7 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Edit `backend/.env`. Minimum required for local dev:
+Edit `PortfolioAI-Backend/.env`. Minimum required for local dev:
 
 ```env
 DATABASE_URL=postgresql+psycopg://portfolio:portfolio@localhost:5433/portfolio_db
@@ -146,10 +145,10 @@ APP_ENV=development
 FRONTEND_URL=http://localhost:3000
 CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 
-# AI — Ollama (see section 6)
-AI_PROVIDER=ollama
-AI_MODEL=llama3.2
-OLLAMA_BASE_URL=http://localhost:11434
+# AI — Google Gemini (see section 6)
+AI_PROVIDER=gemini
+GEMINI_API_KEY=your-key-from-aistudio.google.com
+GEMINI_MODEL=gemini-2.0-flash
 ```
 
 Generate a strong `SECRET_KEY` for production:
@@ -161,8 +160,8 @@ openssl rand -hex 32
 ### 5.4 Run database migrations
 
 ```bash
-# still in backend/, venv activated
-alembic upgrade head
+# still in PortfolioAI-Backend/, venv activated
+PYTHONPATH=. python -m alembic upgrade head
 ```
 
 You should see migrations apply without errors.
@@ -170,28 +169,25 @@ You should see migrations apply without errors.
 ### 5.5 Seed default data (templates)
 
 ```bash
-python -m scripts.seed_db
+PYTHONPATH=. python -m scripts.seed_db
 ```
 
 Expected output: `Database seeded successfully.`
 
 ### 5.6 Start the API (manual option)
 
-**Option A — recommended for full stack:** use the frontend dev script (starts Ollama + backend on port **8001**). See [section 8](#8-run-the-full-stack).
+**Option A — recommended:** use the frontend dev script (starts backend on port **8000**). See [section 8](#8-run-the-full-stack).
 
-**Option B — backend only on port 8000:**
+**Option B — backend only, manually:**
 
 ```bash
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-If you use port **8000**, set the frontend `NEXT_PUBLIC_API_URL` to `http://localhost:8000/api/v1`.
-
 ### 5.7 Check the API
 
 ```bash
-curl http://localhost:8001/api/v1/health
-# or port 8000 if you started manually
+curl http://localhost:8000/api/v1/health
 ```
 
 Expected:
@@ -200,84 +196,34 @@ Expected:
 {"status":"ok","environment":"development"}
 ```
 
-API docs: http://localhost:8001/docs
+API docs: http://localhost:8000/docs
 
 ---
 
-## 6. Ollama setup (local AI)
+## 6. Google Gemini AI setup
 
-PortfolioAI uses **Ollama** by default for AI features (portfolio review, resume parsing, copilot chat, etc.).
+PortfolioAI uses the **free Google Gemini API** for AI features (portfolio review, resume parsing, copilot chat, etc.). No local LLM install required.
 
-### 6.1 Install Ollama
+### 6.1 Get a free API key
 
-**Linux / macOS:**
-
-```bash
-curl -fsSL https://ollama.com/install.sh | sh
-```
-
-**Windows:** download the installer from [https://ollama.com](https://ollama.com).
-
-Verify:
-
-```bash
-ollama --version
-```
-
-### 6.2 Start Ollama
-
-Usually the install starts a background service. Check:
-
-```bash
-curl http://localhost:11434/api/tags
-```
-
-If that fails, start the server manually:
-
-```bash
-ollama serve
-```
-
-Keep it running in a terminal, or use `scripts/start-dev.sh` from the frontend (starts Ollama for you).
-
-### 6.3 Pull the default model
-
-```bash
-ollama pull llama3.2
-```
-
-This downloads ~2GB on first run. Match the model name in `backend/.env`:
+1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
+2. Sign in with your Google account
+3. Click **Create API key**
+4. Copy the key into `PortfolioAI-Backend/.env`:
 
 ```env
-AI_MODEL=llama3.2
+AI_PROVIDER=gemini
+GEMINI_API_KEY=your-key-here
+GEMINI_MODEL=gemini-2.0-flash
 ```
 
-Other models you can try: `llama3.1`, `mistral`, `phi3` — update `AI_MODEL` accordingly.
+### 6.2 Free tier limits
 
-### 6.4 Verify AI from the API
+Gemini’s free tier has rate limits (requests per minute/day). If you hit limits, wait a few minutes and try again. Check usage in [Google AI Studio](https://aistudio.google.com/).
 
-With backend running:
+### 6.3 Verify AI from the API
 
-```bash
-curl http://localhost:8001/api/v1/ai/status
-```
-
-(Requires a logged-in session for full details; Swagger at `/docs` is easier after you register.)
-
-### 6.5 Ollama + backend together (easy path)
-
-From the **frontend** folder:
-
-```bash
-cd "AI-powered portfolio"
-./scripts/start-dev.sh
-```
-
-This script:
-
-1. Starts Ollama if not running  
-2. Pulls `llama3.2` if missing  
-3. Starts the FastAPI backend on **http://127.0.0.1:8001**
+With backend running and a logged-in session, open **AI Assistance** in the app or check Swagger at `/docs` → `GET /api/v1/ai/status`.
 
 ---
 
@@ -301,10 +247,8 @@ cp .env.local.example .env.local
 Edit `.env.local`:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
 ```
-
-Use port **8000** only if you started the backend on 8000 manually.
 
 ### 7.3 Start the development server
 
@@ -327,7 +271,7 @@ npm start
 
 Use **two terminals** for daily development.
 
-### Terminal 1 — API + Ollama
+### Terminal 1 — Backend
 
 ```bash
 cd "AI-powered portfolio"
@@ -338,7 +282,7 @@ Wait for:
 
 ```
 Dev stack running:
-  API:     http://127.0.0.1:8001
+  API:     http://127.0.0.1:8000
 ```
 
 ### Terminal 2 — Frontend
@@ -351,7 +295,7 @@ npm run dev
 ### Terminal 3 — Database (one-time / when needed)
 
 ```bash
-cd backend
+cd PortfolioAI-Backend
 docker compose up -d
 ```
 
@@ -360,9 +304,8 @@ docker compose up -d
 | URL | What |
 |-----|------|
 | http://localhost:3000 | Web app |
-| http://localhost:8001/docs | Swagger API docs |
-| http://localhost:8001/api/v1/health | Health check |
-| http://localhost:11434 | Ollama |
+| http://localhost:8000/docs | Swagger API docs |
+| http://localhost:8000/api/v1/health | Health check |
 
 ---
 
@@ -382,7 +325,7 @@ Fill profile, skills, projects — confirm data saves (no console errors).
 ### 9.3 Test AI
 
 1. Go to **AI Assistance**  
-2. If Ollama is running and your account is Pro, AI tools should be available  
+2. If your account is Pro and `GEMINI_API_KEY` is set, AI tools should be available  
 3. Try **Portfolio review** or **Ask AI** on a dashboard page
 
 ### 9.4 Test public portfolio
@@ -394,11 +337,11 @@ Fill profile, skills, projects — confirm data saves (no console errors).
 ### 9.5 Checklist
 
 - [ ] `docker compose ps` shows Postgres running  
-- [ ] `curl http://localhost:8001/api/v1/health` returns `"ok"`  
-- [ ] `curl http://localhost:11434/api/tags` returns JSON  
+- [ ] `curl http://localhost:8000/api/v1/health` returns `"ok"`  
+- [ ] `GEMINI_API_KEY` is set in backend `.env`  
 - [ ] Frontend loads at localhost:3000  
 - [ ] Register / login works  
-- [ ] Templates page shows 7 templates  
+- [ ] Templates page shows templates  
 
 ---
 
@@ -447,7 +390,7 @@ Requires Google Sign-In client + Calendar API.
 ```env
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
-GOOGLE_CALENDAR_REDIRECT_URI=http://localhost:8001/api/v1/meetings/google/callback
+GOOGLE_CALENDAR_REDIRECT_URI=http://localhost:8000/api/v1/meetings/google/callback
 ```
 
 ### Google OAuth client
@@ -455,7 +398,7 @@ GOOGLE_CALENDAR_REDIRECT_URI=http://localhost:8001/api/v1/meetings/google/callba
 Add **Authorized redirect URI:**
 
 ```
-http://localhost:8001/api/v1/meetings/google/callback
+http://localhost:8000/api/v1/meetings/google/callback
 ```
 
 ### In the app
@@ -466,25 +409,7 @@ http://localhost:8001/api/v1/meetings/google/callback
 
 ---
 
-## 12. Optional: Gemini instead of Ollama
-
-If you prefer cloud AI over local Ollama:
-
-**Backend `.env`:**
-
-```env
-AI_PROVIDER=gemini
-GEMINI_API_KEY=your-key-from-aistudio.google.com
-GEMINI_MODEL=gemini-2.0-flash
-```
-
-Get a key: [Google AI Studio](https://aistudio.google.com/apikey).
-
-Restart the backend. Ollama is not required when `AI_PROVIDER=gemini`.
-
----
-
-## 13. Optional: Email (SMTP)
+## 12. Optional: Email (SMTP)
 
 Without SMTP, emails (verification, password reset, meeting invites) are **printed to the backend console**.
 
@@ -501,24 +426,26 @@ SMTP_USE_TLS=true
 
 For Gmail, use an [App Password](https://support.google.com/accounts/answer/185833), not your main password.
 
+For production without a custom domain, consider [Brevo](https://www.brevo.com) or [Resend](https://resend.com).
+
 ---
 
-## 14. Troubleshooting
+## 13. Troubleshooting
 
 ### `Backend not found` when running `start-dev.sh`
 
-The script expects `backend/` as a **sibling** of `AI-powered portfolio/`:
+The script expects `PortfolioAI-Backend/` or `backend/` as a **sibling** of `AI-powered portfolio/`:
 
 ```
 parent/
 ├── AI-powered portfolio/
-└── backend/
+└── PortfolioAI-Backend/
 ```
 
 ### Database connection refused
 
 ```bash
-cd backend && docker compose up -d
+cd PortfolioAI-Backend && docker compose up -d
 docker compose ps
 ```
 
@@ -529,21 +456,21 @@ Confirm `DATABASE_URL` uses port **5433**.
 - Postgres must be running  
 - `DATABASE_URL` in `.env` must be correct  
 - Virtualenv must be activated  
+- Run: `PYTHONPATH=. python -m alembic upgrade head`
 
 ### Frontend cannot reach API
 
-- Backend running on 8001?  
-- `.env.local` has `NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1`  
+- Backend running on 8000?  
+- `.env.local` has `NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1`  
 - Restart `npm run dev` after changing `.env.local`  
 
 ### AI features unavailable
 
-```bash
-curl http://localhost:11434/api/tags
-ollama pull llama3.2
-```
-
-Check `AI_PROVIDER=ollama` and `OLLAMA_BASE_URL` in `backend/.env`.
+1. Check `GEMINI_API_KEY` is set in `PortfolioAI-Backend/.env`  
+2. Confirm `AI_PROVIDER=gemini`  
+3. Restart the backend after changing `.env`  
+4. Check [Google AI Studio](https://aistudio.google.com/apikey) for quota/errors  
+5. AI features require a **Pro** subscription (or bypass flag below)
 
 ### Testing Pro features locally
 
@@ -573,17 +500,17 @@ Enable **Google Calendar API** in Google Cloud Console and wait 1–2 minutes.
 ### Port already in use
 
 ```bash
-# Find process on 8001
-fuser 8001/tcp
+# Find process on 8000
+fuser 8000/tcp
 # Kill if needed (dev only)
-fuser -k 8001/tcp
+fuser -k 8000/tcp
 ```
 
 ---
 
 ## Need more detail?
 
-- Backend API modules: `backend/README.md`  
-- Environment reference: `backend/.env.example` and `.env.local.example`  
+- Backend API modules: `PortfolioAI-Backend/README.md`  
+- Environment reference: `PortfolioAI-Backend/.env.example` and `.env.local.example`  
 
 Welcome to the team — happy building.

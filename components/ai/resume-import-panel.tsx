@@ -203,7 +203,7 @@ export function ResumeImportPanel() {
 
         {!aiReady && aiStatus && (
           <p className="text-xs text-amber-600 dark:text-amber-400">
-            AI is unavailable — start Ollama or your configured provider to extract
+            AI is unavailable — add a Gemini API key in backend .env to extract
             resume data.
           </p>
         )}
