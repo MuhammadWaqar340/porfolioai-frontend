@@ -28,6 +28,18 @@ import {
 import { useIsAuthenticated } from "@/store/hooks";
 import type { Template } from "@/types";
 
+const cardAnimationDelays = [
+  animationDelays[100],
+  animationDelays[200],
+  animationDelays[300],
+  animationDelays[400],
+  animationDelays[500],
+] as const;
+
+function cardAnimationDelay(index: number) {
+  return cardAnimationDelays[index % cardAnimationDelays.length];
+}
+
 interface TemplatesGridProps {
   selectable?: boolean;
   showToolbar?: boolean;
@@ -40,7 +52,7 @@ function TemplateCardSkeleton({ index }: { index: number }) {
       className={cn(
         "overflow-hidden rounded-xl border bg-card shadow-sm",
         motion.fadeInUp,
-        animationDelays[(index % 5) * 100 + 100]
+        cardAnimationDelay(index)
       )}
     >
       <div className="aspect-[5/4] animate-pulse bg-muted/50 sm:aspect-[4/3]" />
@@ -186,7 +198,7 @@ export function TemplatesGrid({
         <TemplatesCarousel>
           {filteredTemplates.map((template, index) => (
             <TemplateCarouselSlide key={template.id}>
-              <div className={cn(motion.fadeInUp, animationDelays[(index % 5) * 100 + 100])}>
+              <div className={cn(motion.fadeInUp, cardAnimationDelay(index))}>
                 <TemplateCard
                   template={template}
                   layout={canSelect ? "select" : "browse"}
@@ -213,7 +225,7 @@ export function TemplatesGrid({
           {filteredTemplates.map((template, index) => (
             <div
               key={template.id}
-              className={cn(motion.fadeInUp, animationDelays[(index % 5) * 100 + 100])}
+              className={cn(motion.fadeInUp, cardAnimationDelay(index))}
             >
               <TemplateCard
                 template={template}
