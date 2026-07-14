@@ -18,7 +18,8 @@ Complete step-by-step instructions for new developers to run **PortfolioAI** loc
 10. [Optional: Google Sign-In](#10-optional-google-sign-in)
 11. [Optional: Google Meet booking](#11-optional-google-meet-booking)
 12. [Optional: Email (SMTP)](#12-optional-email-smtp)
-13. [Troubleshooting](#13-troubleshooting)
+13. [Production image storage (Cloudinary)](#13-production-image-storage-cloudinary)
+14. [Troubleshooting](#14-troubleshooting)
 
 ---
 
@@ -430,7 +431,29 @@ For production without a custom domain, consider [Brevo](https://www.brevo.com) 
 
 ---
 
-## 13. Troubleshooting
+## 13. Production image storage (Cloudinary)
+
+Render’s filesystem is **ephemeral** — uploaded images disappear after redeploys. Use **Cloudinary** so avatars and project images persist.
+
+1. Create a free account: https://cloudinary.com/users/register/free  
+2. Open the dashboard → **API Keys** and copy Cloud Name, API Key, and API Secret  
+3. On your **Render** backend service → Environment, add:
+
+```env
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_FOLDER=portfolioai
+```
+
+4. Redeploy the backend  
+5. Re-upload any images that already broke (old local `/uploads/...` paths are gone)
+
+Local development works without Cloudinary (files stay on disk under `uploads/`).
+
+---
+
+## 14. Troubleshooting
 
 ### `Backend not found` when running `start-dev.sh`
 
