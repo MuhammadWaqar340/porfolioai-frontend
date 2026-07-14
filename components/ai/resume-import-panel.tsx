@@ -2,6 +2,7 @@
 
 import { FileText, Loader2, Upload, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { UrlImportPanel } from "@/components/url-import/url-import-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +44,7 @@ export function ResumeImportPanel() {
     isApplying,
     extractFromText,
     loadFromFile,
+    loadDraft,
     applyDraft,
     clearDraft,
   } = useResumeImport();
@@ -197,6 +199,19 @@ export function ResumeImportPanel() {
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="rounded-lg border border-dashed border-border/80 bg-muted/30 p-4">
+          <p className="mb-3 text-sm font-medium">Import from LinkedIn profile URL</p>
+          <UrlImportPanel
+            mode="profile"
+            onProfileReady={(nextDraft, nextProvider) => {
+              clearUploadedFile();
+              clearDraft();
+              loadDraft(nextDraft, nextProvider);
+              notifySuccess("Profile extracted — review sections below before applying.");
+            }}
+          />
+        </div>
+
         <p className="text-xs text-muted-foreground">
           Supported formats: PDF, DOCX, or plain text. Minimum 50 characters of content.
         </p>

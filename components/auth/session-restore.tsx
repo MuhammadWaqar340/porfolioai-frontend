@@ -6,7 +6,7 @@ import { getStoredAccessToken } from "@/lib/auth-storage";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { hydrateToken, restoreSessionComplete } from "@/store/slices/authSlice";
 
-let refreshInFlight = false;
+let hasBootstrappedSession = false;
 
 export function SessionRestore() {
   const dispatch = useAppDispatch();
@@ -15,21 +15,22 @@ export function SessionRestore() {
   const [refreshToken] = useRefreshTokenMutation();
 
   useEffect(() => {
-    if (sessionRestored) return;
+    if (sessionRestored || hasBootstrappedSession) return;
 
     const storedToken = getStoredAccessToken();
     if (storedToken) {
+      hasBootstrappedSession = true;
       dispatch(hydrateToken(storedToken));
       return;
     }
 
     if (accessToken) {
+      hasBootstrappedSession = true;
       dispatch(restoreSessionComplete());
       return;
     }
 
-    if (refreshInFlight) return;
-    refreshInFlight = true;
+    hasBootstrappedSession = true;
 
     void refreshToken()
       .unwrap()
@@ -38,9 +39,6 @@ export function SessionRestore() {
       })
       .catch(() => {
         dispatch(restoreSessionComplete());
-      })
-      .finally(() => {
-        refreshInFlight = false;
       });
   }, [accessToken, dispatch, refreshToken, sessionRestored]);
 

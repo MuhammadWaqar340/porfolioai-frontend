@@ -854,6 +854,28 @@ export interface ResumeParseFileResult {
   character_count: number;
 }
 
+export type UrlImportType = "auto" | "job" | "profile";
+
+export interface JobImportDraft {
+  company_name: string;
+  job_title: string;
+  recruiter_email: string | null;
+  job_url: string | null;
+  job_description: string | null;
+  location: string | null;
+  notes: string | null;
+}
+
+export interface UrlImportResult {
+  import_type: "job" | "profile";
+  source_url: string;
+  page_title: string | null;
+  warnings: string[];
+  provider: string;
+  job_draft: JobImportDraft | null;
+  profile_draft: ResumeImportDraft | null;
+}
+
 export interface MeetingSettings {
   enabled: boolean;
   timezone: string;
