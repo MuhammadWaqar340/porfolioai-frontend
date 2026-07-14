@@ -51,21 +51,24 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithReauth: BaseQueryFn<
-  string | FetchArgs,
-  unknown,
-  FetchBaseQueryError
-> = async (args, api, extraOptions) => {
-  let result = await rawBaseQuery(args, api, extraOptions);
+let refreshRequest: Promise<boolean> | null = null;
 
-  if (result.error?.status === 401 && !isPublicAuthRequest(args)) {
-    const refreshResult = await rawBaseQuery(
-      { url: "/auth/refresh", method: "POST" },
-      api,
-      extraOptions
-    );
+async function refreshAccessToken(
+  api: Parameters<BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>>[1],
+  extraOptions: Parameters<BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>>[2]
+): Promise<boolean> {
+  if (!refreshRequest) {
+    refreshRequest = (async () => {
+      const refreshResult = await rawBaseQuery(
+        { url: "/auth/refresh", method: "POST" },
+        api,
+        extraOptions
+      );
 
-    if (refreshResult.data) {
+      if (!refreshResult.data) {
+        return false;
+      }
+
       const payload = refreshResult.data as ApiSuccess<TokenData>;
       const state = api.getState() as AppState;
       saveAccessToken(payload.data.access_token, getRememberMePreference());
@@ -80,6 +83,26 @@ const baseQueryWithReauth: BaseQueryFn<
       } else {
         api.dispatch(hydrateToken(payload.data.access_token));
       }
+      return true;
+    })().finally(() => {
+      refreshRequest = null;
+    });
+  }
+
+  return refreshRequest;
+}
+
+const baseQueryWithReauth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  let result = await rawBaseQuery(args, api, extraOptions);
+
+  if (result.error?.status === 401 && !isPublicAuthRequest(args)) {
+    const refreshed = await refreshAccessToken(api, extraOptions);
+
+    if (refreshed) {
       result = await rawBaseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logout());

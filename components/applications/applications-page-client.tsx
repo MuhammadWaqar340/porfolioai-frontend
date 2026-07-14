@@ -1,6 +1,6 @@
 "use client";
 
-import { KanbanSquare, Plus, Sparkles } from "lucide-react";
+import { KanbanSquare, Link2, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -8,6 +8,7 @@ import {
   buildApplicationPayload,
 } from "@/components/applications/application-form-sheet";
 import { ApplicationsBoard } from "@/components/applications/applications-board";
+import { UrlImportSheet } from "@/components/url-import/url-import-sheet";
 import { PageHeader } from "@/components/layout/page-header";
 import { ProUpgradeCard } from "@/components/subscription/pro-upgrade-card";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +40,7 @@ export function ApplicationsPageClient() {
   const { confirm, confirmDialog } = useConfirmDialog();
 
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [importSheetOpen, setImportSheetOpen] = useState(false);
   const [editingApplication, setEditingApplication] = useState<JobApplication | null>(null);
 
   const atLimit = stats?.is_at_active_limit ?? false;
@@ -93,6 +95,15 @@ export function ApplicationsPageClient() {
         description="Track every role you save, apply to, and interview for — with linked portfolio variants and materials."
       >
         <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setImportSheetOpen(true)}
+            disabled={atLimit && !isPro}
+          >
+            <Link2 className="mr-2 h-4 w-4" />
+            Import from URL
+          </Button>
           <Button
             type="button"
             variant="outline"
@@ -212,6 +223,7 @@ export function ApplicationsPageClient() {
         application={editingApplication}
         onSubmit={handleSubmit}
       />
+      <UrlImportSheet open={importSheetOpen} onOpenChange={setImportSheetOpen} />
 
       {confirmDialog}
     </div>

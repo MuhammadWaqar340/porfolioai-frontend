@@ -52,6 +52,8 @@ import type {
   ShareLink,
   ResumeImportResult,
   ResumeParseFileResult,
+  UrlImportResult,
+  UrlImportType,
   SkillsSuggestionsResult,
   SuggestTechnologiesResult,
   SuggestTitleResult,
@@ -1142,6 +1144,13 @@ export const portfolioApi = baseApi.injectEndpoints({
       query: (body) => ({ url: "/ai/resume/parse-file", method: "POST", body }),
       transformResponse: (r: ApiSuccess<ResumeParseFileResult>) => unwrapApi(r),
     }),
+    importFromUrl: builder.mutation<
+      UrlImportResult,
+      { url: string; import_type?: UrlImportType; fallback_text?: string }
+    >({
+      query: (body) => ({ url: "/ai/import-from-url", method: "POST", body }),
+      transformResponse: (r: ApiSuccess<UrlImportResult>) => unwrapApi(r),
+    }),
 
     getMeetingSettings: builder.query<MeetingSettings, void>({
       query: () => "/meetings/settings",
@@ -1336,6 +1345,7 @@ export const {
   usePageChatMutation,
   useImportResumeTextMutation,
   useParseResumeFileMutation,
+  useImportFromUrlMutation,
   useGetMeetingSettingsQuery,
   useGetMeetingTimezonesQuery,
   useUpdateMeetingSettingsMutation,

@@ -63,6 +63,11 @@ export function useResumeImport() {
     setProvider(null);
   }, []);
 
+  const loadDraft = useCallback((nextDraft: ResumeImportDraft, nextProvider: string) => {
+    setDraft(nextDraft);
+    setProvider(nextProvider);
+  }, []);
+
   const applyDraft = useCallback(
     async (
       currentProfile: Profile,
@@ -184,6 +189,7 @@ export function useResumeImport() {
     isApplying,
     extractFromText,
     loadFromFile,
+    loadDraft,
     applyDraft,
     clearDraft,
   };

@@ -9,8 +9,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
+import { UrlImportPanel } from "@/components/url-import/url-import-panel";
 import { ProUpgradeCard } from "@/components/subscription/pro-upgrade-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ import type {
 import { slugify } from "@/lib/slug";
 import { isValidRecruiterEmail } from "@/lib/application-email";
 import { notifySuccess } from "@/lib/toast";
+import type { JobImportFormValues } from "@/hooks/use-url-import";
 import { cn } from "@/lib/utils";
 import {
   useCompleteApplyWizardMutation,
@@ -105,6 +107,26 @@ export function ApplyJobWizard() {
     jobTitle.trim().length > 0 &&
     trimmedDescription.length >= 50;
 
+  const handleJobImport = useCallback((values: JobImportFormValues) => {
+    setCompanyName(values.company_name);
+    setJobTitle(values.job_title);
+    setRecruiterEmail(values.recruiter_email);
+    setJobUrl(values.job_url);
+    setJobDescription(values.job_description);
+    notifySuccess("Job details imported — review and continue.");
+  }, []);
+
+  const handleJobReady = useCallback(
+    (values: JobImportFormValues) => {
+      handleJobImport(values);
+    },
+    [handleJobImport]
+  );
+
+  const autoTailorTriggeredRef = useRef(false);
+  const autoVariantTriggeredRef = useRef(false);
+  const autoCoverTriggeredRef = useRef(false);
+
   const runTailor = useCallback(async () => {
     if (trimmedDescription.length < 50) return;
     setError(null);
@@ -173,27 +195,48 @@ export function ApplyJobWizard() {
   ]);
 
   useEffect(() => {
-    if (step === 1 && !tailorResult && !isTailoring) {
-      void runTailor();
+    if (step !== 1) {
+      autoTailorTriggeredRef.current = false;
+      return;
     }
+    if (tailorResult || isTailoring || autoTailorTriggeredRef.current) return;
+    autoTailorTriggeredRef.current = true;
+    void runTailor();
   }, [step, tailorResult, isTailoring, runTailor]);
 
   useEffect(() => {
-    if (
-      step === 2 &&
-      variantMode === "create" &&
-      isPro &&
-      !variantName &&
-      !isSuggestingVariant
-    ) {
-      void runSuggestVariant();
+    if (step !== 2) {
+      autoVariantTriggeredRef.current = false;
+      return;
     }
-  }, [step, variantMode, isPro, variantName, isSuggestingVariant, runSuggestVariant]);
+    if (
+      variantMode !== "create" ||
+      !isPro ||
+      variantName ||
+      isSuggestingVariant ||
+      autoVariantTriggeredRef.current
+    ) {
+      return;
+    }
+    autoVariantTriggeredRef.current = true;
+    void runSuggestVariant();
+  }, [
+    step,
+    variantMode,
+    isPro,
+    variantName,
+    isSuggestingVariant,
+    runSuggestVariant,
+  ]);
 
   useEffect(() => {
-    if (step === 3 && !coverContent && !isGeneratingCover) {
-      void runGenerateCoverLetter();
+    if (step !== 3) {
+      autoCoverTriggeredRef.current = false;
+      return;
     }
+    if (coverContent || isGeneratingCover || autoCoverTriggeredRef.current) return;
+    autoCoverTriggeredRef.current = true;
+    void runGenerateCoverLetter();
   }, [step, coverContent, isGeneratingCover, runGenerateCoverLetter]);
 
   useEffect(() => {
@@ -327,7 +370,12 @@ export function ApplyJobWizard() {
       <Card>
         <CardContent className="space-y-6 p-6">
           {step === 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              <div className="rounded-lg border border-dashed border-border/80 bg-muted/30 p-4">
+                <p className="mb-3 text-sm font-medium">Import from job posting URL</p>
+                <UrlImportPanel mode="job" onJobReady={handleJobReady} />
+              </div>
+              <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="wizard-company">Company</Label>
@@ -388,6 +436,7 @@ export function ApplyJobWizard() {
                     ? `${trimmedDescription.length.toLocaleString()} characters`
                     : "Minimum 50 characters"}
                 </p>
+              </div>
               </div>
             </div>
           ) : null}
