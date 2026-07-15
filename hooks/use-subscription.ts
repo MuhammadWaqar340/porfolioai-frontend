@@ -41,6 +41,12 @@ export function useSubscription() {
       meet_booking: isPro,
       job_application_tracker: true,
       unlimited_job_applications: isPro,
+      unlimited_organizations: isPro,
+      org_verified_badge: isPro,
+      org_embed_widget: true,
+      org_departments: true,
+      org_limit: isPro ? -1 : 1,
+      org_seat_limit: isPro ? 50 : 5,
     },
     canUseTemplate(slug: string) {
       return (

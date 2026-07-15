@@ -15,11 +15,13 @@ import {
   Video,
   Wrench,
   Calendar,
+  Building2,
 } from "lucide-react";
 
 export const sidebarNavItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { title: "Analytics", href: "/analytics", icon: BarChart3 },
+  { title: "Organization", href: "/organization", icon: Building2 },
   { title: "Profile", href: "/profile", icon: User },
   { title: "Video Introduction", href: "/intro-video", icon: Video },
   { title: "Skills", href: "/skills", icon: Wrench },

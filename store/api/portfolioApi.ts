@@ -35,8 +35,28 @@ import type {
   MeetingTimezone,
   ScheduledMeeting,
   CertificationSuggestionResult,
+  Company,
+  CompanyAnalytics,
+  CompanyAuditLogEntry,
+  CompanyCreatePayload,
+  CompanyDepartment,
+  CompanyDepartmentCreatePayload,
+  CompanyDepartmentUpdatePayload,
+  CompanyDetail,
+  CompanyInvite,
+  CompanyInvitePreview,
+  CompanyMember,
+  CompanyMemberPortfolio,
+  CompanyMemberPortfolioUpdatePayload,
+  CompanyPageEventPayload,
+  CompanyPlaceholder,
+  CompanyPlaceholderCreatePayload,
+  CompanyPlaceholderUpdatePayload,
+  CompanyUpdatePayload,
+  CompanyUsage,
   EducationSuggestionResult,
   GitHubImportResult,
+  PublicCompany,
   JobApplication,
   JobApplicationStats,
   JobApplicationStatus,
@@ -1225,6 +1245,338 @@ export const portfolioApi = baseApi.injectEndpoints({
       }),
       transformResponse: (r: ApiSuccess<MeetingBookResult>) => unwrapApi(r),
     }),
+
+    // Companies / Organizations
+    getMyCompanies: builder.query<Company[], void>({
+      query: () => "/companies/me",
+      transformResponse: (r: ApiSuccess<Company[]>) => unwrapApi(r),
+      providesTags: ["Companies"],
+    }),
+    getCompany: builder.query<CompanyDetail, string>({
+      query: (companyId) => `/companies/${companyId}`,
+      transformResponse: (r: ApiSuccess<CompanyDetail>) => unwrapApi(r),
+      providesTags: (_r, _e, id) => [{ type: "Companies", id }],
+    }),
+    createCompany: builder.mutation<CompanyDetail, CompanyCreatePayload>({
+      query: (body) => ({ url: "/companies", method: "POST", body }),
+      transformResponse: (r: ApiSuccess<CompanyDetail>) => unwrapApi(r),
+      invalidatesTags: ["Companies"],
+    }),
+    updateCompany: builder.mutation<
+      CompanyDetail,
+      { companyId: string; body: CompanyUpdatePayload }
+    >({
+      query: ({ companyId, body }) => ({
+        url: `/companies/${companyId}`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<CompanyDetail>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        "Companies",
+        { type: "Companies", id: companyId },
+      ],
+    }),
+    deleteCompany: builder.mutation<{ message: string }, string>({
+      query: (companyId) => ({
+        url: `/companies/${companyId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Companies"],
+    }),
+    updateCompanyMember: builder.mutation<
+      CompanyMember,
+      {
+        companyId: string;
+        memberUserId: string;
+        body: {
+          role?: "admin" | "member";
+          is_featured?: boolean;
+          display_order?: number;
+          department_id?: string | null;
+        };
+      }
+    >({
+      query: ({ companyId, memberUserId, body }) => ({
+        url: `/companies/${companyId}/members/${memberUserId}`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<CompanyMember>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        "Companies",
+        { type: "Companies", id: companyId },
+      ],
+    }),
+    updateMyCompanyConsent: builder.mutation<
+      CompanyMember,
+      { companyId: string; org_edit_consent: boolean }
+    >({
+      query: ({ companyId, org_edit_consent }) => ({
+        url: `/companies/${companyId}/members/me/consent`,
+        method: "PATCH",
+        body: { org_edit_consent },
+      }),
+      transformResponse: (r: ApiSuccess<CompanyMember>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: companyId },
+      ],
+    }),
+    requestCompanyMemberEdit: builder.mutation<
+      CompanyMember,
+      { companyId: string; memberUserId: string }
+    >({
+      query: ({ companyId, memberUserId }) => ({
+        url: `/companies/${companyId}/members/${memberUserId}/request-edit`,
+        method: "POST",
+      }),
+      transformResponse: (r: ApiSuccess<CompanyMember>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: companyId },
+      ],
+    }),
+    getCompanyMemberPortfolio: builder.query<
+      CompanyMemberPortfolio,
+      { companyId: string; memberUserId: string }
+    >({
+      query: ({ companyId, memberUserId }) =>
+        `/companies/${companyId}/members/${memberUserId}/portfolio`,
+      transformResponse: (r: ApiSuccess<CompanyMemberPortfolio>) => unwrapApi(r),
+      providesTags: (_r, _e, { companyId, memberUserId }) => [
+        { type: "Companies", id: `${companyId}-portfolio-${memberUserId}` },
+      ],
+    }),
+    updateCompanyMemberPortfolio: builder.mutation<
+      CompanyMemberPortfolio,
+      {
+        companyId: string;
+        memberUserId: string;
+        body: CompanyMemberPortfolioUpdatePayload;
+      }
+    >({
+      query: ({ companyId, memberUserId, body }) => ({
+        url: `/companies/${companyId}/members/${memberUserId}/portfolio`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<CompanyMemberPortfolio>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId, memberUserId }) => [
+        { type: "Companies", id: companyId },
+        { type: "Companies", id: `${companyId}-portfolio-${memberUserId}` },
+      ],
+    }),
+    reorderCompanyMembers: builder.mutation<
+      CompanyMember[],
+      { companyId: string; orderedUserIds: string[] }
+    >({
+      query: ({ companyId, orderedUserIds }) => ({
+        url: `/companies/${companyId}/members/reorder`,
+        method: "PUT",
+        body: { ordered_user_ids: orderedUserIds },
+      }),
+      transformResponse: (r: ApiSuccess<CompanyMember[]>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        "Companies",
+        { type: "Companies", id: companyId },
+      ],
+    }),
+    removeCompanyMember: builder.mutation<
+      { message: string },
+      { companyId: string; memberUserId: string }
+    >({
+      query: ({ companyId, memberUserId }) => ({
+        url: `/companies/${companyId}/members/${memberUserId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        "Companies",
+        { type: "Companies", id: companyId },
+      ],
+    }),
+    getCompanyAnalytics: builder.query<CompanyAnalytics, string>({
+      query: (companyId) => `/companies/${companyId}/analytics`,
+      transformResponse: (r: ApiSuccess<CompanyAnalytics>) => unwrapApi(r),
+      providesTags: (_r, _e, id) => [{ type: "Companies", id: `${id}-analytics` }],
+    }),
+    getCompanyInvites: builder.query<CompanyInvite[], string>({
+      query: (companyId) => `/companies/${companyId}/invites`,
+      transformResponse: (r: ApiSuccess<CompanyInvite[]>) => unwrapApi(r),
+      providesTags: (_r, _e, id) => [{ type: "Companies", id: `${id}-invites` }],
+    }),
+    createCompanyInvite: builder.mutation<
+      CompanyInvite,
+      { companyId: string; email: string; role?: "admin" | "member" }
+    >({
+      query: ({ companyId, email, role }) => ({
+        url: `/companies/${companyId}/invites`,
+        method: "POST",
+        body: { email, role: role ?? "member" },
+      }),
+      transformResponse: (r: ApiSuccess<CompanyInvite>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: `${companyId}-invites` },
+      ],
+    }),
+    revokeCompanyInvite: builder.mutation<
+      { message: string },
+      { companyId: string; inviteId: string }
+    >({
+      query: ({ companyId, inviteId }) => ({
+        url: `/companies/${companyId}/invites/${inviteId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: `${companyId}-invites` },
+      ],
+    }),
+    previewCompanyInvite: builder.query<CompanyInvitePreview, string>({
+      query: (token) => `/companies/invites/${token}`,
+      transformResponse: (r: ApiSuccess<CompanyInvitePreview>) => unwrapApi(r),
+    }),
+    acceptCompanyInvite: builder.mutation<CompanyDetail, string>({
+      query: (token) => ({
+        url: `/companies/invites/${token}/accept`,
+        method: "POST",
+      }),
+      transformResponse: (r: ApiSuccess<CompanyDetail>) => unwrapApi(r),
+      invalidatesTags: ["Companies"],
+    }),
+    getPublicCompany: builder.query<PublicCompany, string>({
+      query: (slug) => `/companies/public/${slug}`,
+      transformResponse: (r: ApiSuccess<PublicCompany>) => unwrapApi(r),
+    }),
+    recordPublicCompanyEvent: builder.mutation<
+      { message: string },
+      { slug: string; body: CompanyPageEventPayload }
+    >({
+      query: ({ slug, body }) => ({
+        url: `/companies/public/${slug}/events`,
+        method: "POST",
+        body,
+      }),
+    }),
+    getCompanyPlaceholders: builder.query<CompanyPlaceholder[], string>({
+      query: (companyId) => `/companies/${companyId}/placeholders`,
+      transformResponse: (r: ApiSuccess<CompanyPlaceholder[]>) => unwrapApi(r),
+      providesTags: (_r, _e, companyId) => [
+        { type: "Companies", id: `${companyId}-placeholders` },
+      ],
+    }),
+    createCompanyPlaceholder: builder.mutation<
+      CompanyPlaceholder,
+      { companyId: string; body: CompanyPlaceholderCreatePayload }
+    >({
+      query: ({ companyId, body }) => ({
+        url: `/companies/${companyId}/placeholders`,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<CompanyPlaceholder>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: companyId },
+        { type: "Companies", id: `${companyId}-placeholders` },
+      ],
+    }),
+    updateCompanyPlaceholder: builder.mutation<
+      CompanyPlaceholder,
+      {
+        companyId: string;
+        placeholderId: string;
+        body: CompanyPlaceholderUpdatePayload;
+      }
+    >({
+      query: ({ companyId, placeholderId, body }) => ({
+        url: `/companies/${companyId}/placeholders/${placeholderId}`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<CompanyPlaceholder>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: companyId },
+        { type: "Companies", id: `${companyId}-placeholders` },
+      ],
+    }),
+    deleteCompanyPlaceholder: builder.mutation<
+      { message: string },
+      { companyId: string; placeholderId: string }
+    >({
+      query: ({ companyId, placeholderId }) => ({
+        url: `/companies/${companyId}/placeholders/${placeholderId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: companyId },
+        { type: "Companies", id: `${companyId}-placeholders` },
+      ],
+    }),
+    getCompanyAuditLogs: builder.query<
+      CompanyAuditLogEntry[],
+      { companyId: string; limit?: number }
+    >({
+      query: ({ companyId, limit }) =>
+        `/companies/${companyId}/audit-logs?limit=${limit ?? 50}`,
+      transformResponse: (r: ApiSuccess<CompanyAuditLogEntry[]>) => unwrapApi(r),
+      providesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: `${companyId}-audit-logs` },
+      ],
+    }),
+    getCompanyUsage: builder.query<CompanyUsage, string>({
+      query: (companyId) => `/companies/${companyId}/usage`,
+      transformResponse: (r: ApiSuccess<CompanyUsage>) => unwrapApi(r),
+      providesTags: (_r, _e, companyId) => [
+        { type: "Companies", id: `${companyId}-usage` },
+      ],
+    }),
+    getCompanyDepartments: builder.query<CompanyDepartment[], string>({
+      query: (companyId) => `/companies/${companyId}/departments`,
+      transformResponse: (r: ApiSuccess<CompanyDepartment[]>) => unwrapApi(r),
+      providesTags: (_r, _e, companyId) => [
+        { type: "Companies", id: `${companyId}-departments` },
+      ],
+    }),
+    createCompanyDepartment: builder.mutation<
+      CompanyDepartment,
+      { companyId: string; body: CompanyDepartmentCreatePayload }
+    >({
+      query: ({ companyId, body }) => ({
+        url: `/companies/${companyId}/departments`,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<CompanyDepartment>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: companyId },
+        { type: "Companies", id: `${companyId}-departments` },
+      ],
+    }),
+    updateCompanyDepartment: builder.mutation<
+      CompanyDepartment,
+      { companyId: string; departmentId: string; body: CompanyDepartmentUpdatePayload }
+    >({
+      query: ({ companyId, departmentId, body }) => ({
+        url: `/companies/${companyId}/departments/${departmentId}`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (r: ApiSuccess<CompanyDepartment>) => unwrapApi(r),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: companyId },
+        { type: "Companies", id: `${companyId}-departments` },
+      ],
+    }),
+    deleteCompanyDepartment: builder.mutation<
+      { message: string },
+      { companyId: string; departmentId: string }
+    >({
+      query: ({ companyId, departmentId }) => ({
+        url: `/companies/${companyId}/departments/${departmentId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_r, _e, { companyId }) => [
+        { type: "Companies", id: companyId },
+        { type: "Companies", id: `${companyId}-departments` },
+      ],
+    }),
   }),
 });
 
@@ -1355,4 +1707,34 @@ export const {
   useCancelMeetingMutation,
   useGetPublicMeetingAvailabilityQuery,
   useBookPublicMeetingMutation,
+  useGetMyCompaniesQuery,
+  useGetCompanyQuery,
+  useCreateCompanyMutation,
+  useUpdateCompanyMutation,
+  useDeleteCompanyMutation,
+  useUpdateCompanyMemberMutation,
+  useUpdateMyCompanyConsentMutation,
+  useRequestCompanyMemberEditMutation,
+  useGetCompanyMemberPortfolioQuery,
+  useUpdateCompanyMemberPortfolioMutation,
+  useReorderCompanyMembersMutation,
+  useRemoveCompanyMemberMutation,
+  useGetCompanyAnalyticsQuery,
+  useGetCompanyInvitesQuery,
+  useCreateCompanyInviteMutation,
+  useRevokeCompanyInviteMutation,
+  usePreviewCompanyInviteQuery,
+  useAcceptCompanyInviteMutation,
+  useGetPublicCompanyQuery,
+  useRecordPublicCompanyEventMutation,
+  useGetCompanyPlaceholdersQuery,
+  useCreateCompanyPlaceholderMutation,
+  useUpdateCompanyPlaceholderMutation,
+  useDeleteCompanyPlaceholderMutation,
+  useGetCompanyAuditLogsQuery,
+  useGetCompanyUsageQuery,
+  useGetCompanyDepartmentsQuery,
+  useCreateCompanyDepartmentMutation,
+  useUpdateCompanyDepartmentMutation,
+  useDeleteCompanyDepartmentMutation,
 } = portfolioApi;

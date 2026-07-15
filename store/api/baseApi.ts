@@ -137,6 +137,7 @@ export const tagTypes = [
   "IntroVideo",
   "InactivityNudge",
   "Meetings",
+  "Companies",
   "Admin",
   "PlatformConfig",
 ] as const;

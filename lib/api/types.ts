@@ -128,6 +128,12 @@ export interface PlanFeatures {
   meet_booking: boolean;
   job_application_tracker: boolean;
   unlimited_job_applications: boolean;
+  unlimited_organizations?: boolean;
+  org_verified_badge?: boolean;
+  org_embed_widget?: boolean;
+  org_departments?: boolean;
+  org_limit?: number;
+  org_seat_limit?: number;
 }
 
 export interface SubscriptionPlanData {
@@ -926,3 +932,307 @@ export interface MeetingBookResult {
   ends_at: string;
   message: string;
 }
+
+export type CompanyRole = "owner" | "admin" | "member";
+
+export interface Company {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string;
+  website: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin_url: string;
+  about: string;
+  industry: string;
+  accent_color: string;
+  cover_image_url: string;
+  is_public: boolean;
+  featured_only_on_public: boolean;
+  default_template_id: string | null;
+  is_verified: boolean;
+  seo_title: string;
+  seo_description: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  my_role: string | null;
+  member_count: number;
+  public_url: string | null;
+}
+
+export interface CompanyMember {
+  id: string;
+  company_id: string;
+  user_id: string;
+  role: string;
+  is_featured: boolean;
+  display_order: number;
+  joined_at: string;
+  full_name: string;
+  title: string;
+  email: string;
+  avatar_url: string;
+  portfolio_username: string | null;
+  portfolio_is_public: boolean;
+  portfolio_url: string | null;
+  has_avatar: boolean;
+  has_about: boolean;
+  has_projects: boolean;
+  completeness_label: "ready" | "needs_work" | "private" | string;
+  org_edit_consent: boolean;
+  org_edit_requested_at: string | null;
+  department_id: string | null;
+  department_name: string | null;
+}
+
+export interface CompanyPlaceholder {
+  id: string;
+  company_id: string;
+  email: string;
+  display_name: string;
+  title: string;
+  avatar_url: string;
+  is_featured: boolean;
+  display_order: number;
+  invite_id: string | null;
+  department_id: string | null;
+  department_name: string | null;
+  created_at: string;
+}
+
+export interface CompanyPlaceholderCreatePayload {
+  email: string;
+  display_name: string;
+  title?: string;
+  avatar_url?: string;
+  is_featured?: boolean;
+  display_order?: number;
+  send_invite?: boolean;
+  invite_role?: "admin" | "member";
+  department_id?: string | null;
+}
+
+export type CompanyPlaceholderUpdatePayload = Partial<
+  Pick<
+    CompanyPlaceholder,
+    | "email"
+    | "display_name"
+    | "title"
+    | "avatar_url"
+    | "is_featured"
+    | "display_order"
+    | "department_id"
+  >
+>;
+
+export interface CompanyDepartment {
+  id: string;
+  company_id: string;
+  name: string;
+  slug: string;
+  description: string;
+  display_order: number;
+  member_count: number;
+  placeholder_count: number;
+  created_at: string;
+}
+
+export interface CompanyDepartmentCreatePayload {
+  name: string;
+  description?: string;
+  display_order?: number;
+}
+
+export type CompanyDepartmentUpdatePayload = Partial<CompanyDepartmentCreatePayload>;
+
+export interface CompanyUsage {
+  plan: SubscriptionPlan;
+  is_pro_owner: boolean;
+  seats_used: number;
+  seat_limit: number;
+  orgs_owned: number;
+  org_limit: number;
+}
+
+export interface CompanyMemberPortfolio {
+  user_id: string;
+  full_name: string;
+  title: string;
+  about: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin: string;
+  github: string;
+  website: string;
+  avatar_url: string;
+  username: string | null;
+  is_public: boolean;
+  template_id: string | null;
+}
+
+export type CompanyMemberPortfolioUpdatePayload = Partial<
+  Pick<
+    CompanyMemberPortfolio,
+    | "full_name"
+    | "title"
+    | "about"
+    | "phone"
+    | "location"
+    | "linkedin"
+    | "github"
+    | "website"
+    | "avatar_url"
+    | "is_public"
+    | "template_id"
+  >
+>;
+
+export interface CompanyAuditLogEntry {
+  id: string;
+  company_id: string;
+  actor_id: string | null;
+  actor_name: string | null;
+  action: string;
+  target_type: string;
+  target_id: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface CompanyInvite {
+  id: string;
+  company_id: string;
+  email: string;
+  role: string;
+  status: string;
+  expires_at: string;
+  accepted_at: string | null;
+  created_at: string;
+  invite_url: string | null;
+}
+
+export interface CompanyDetail extends Company {
+  members: CompanyMember[];
+  placeholders: CompanyPlaceholder[];
+  departments: CompanyDepartment[];
+}
+
+export interface CompanyCreatePayload {
+  name: string;
+  slug?: string;
+  logo_url?: string;
+  website?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  linkedin_url?: string;
+  about?: string;
+  industry?: string;
+  accent_color?: string;
+  cover_image_url?: string;
+  is_public?: boolean;
+  featured_only_on_public?: boolean;
+  default_template_id?: string | null;
+  is_verified?: boolean;
+  seo_title?: string;
+  seo_description?: string;
+}
+
+export interface CompanyUpdatePayload {
+  name?: string;
+  slug?: string;
+  logo_url?: string;
+  website?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  linkedin_url?: string;
+  about?: string;
+  industry?: string;
+  accent_color?: string;
+  cover_image_url?: string;
+  is_public?: boolean;
+  featured_only_on_public?: boolean;
+  default_template_id?: string | null;
+  is_verified?: boolean;
+  seo_title?: string;
+  seo_description?: string;
+}
+
+export interface CompanyInvitePreview {
+  company_name: string;
+  company_slug: string;
+  company_logo_url: string;
+  email: string;
+  role: string;
+  expires_at: string;
+  status: string;
+}
+
+export interface PublicCompanyMember {
+  user_id: string | null;
+  full_name: string;
+  title: string;
+  avatar_url: string;
+  is_featured: boolean;
+  display_order: number;
+  portfolio_username: string | null;
+  portfolio_url: string | null;
+  is_placeholder?: boolean;
+  department_id: string | null;
+  department_name: string | null;
+}
+
+export interface PublicCompanyDepartment {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface PublicCompany {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string;
+  website: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin_url: string;
+  about: string;
+  industry: string;
+  accent_color: string;
+  cover_image_url: string;
+  featured_only_on_public: boolean;
+  is_verified: boolean;
+  seo_title: string;
+  seo_description: string;
+  member_count: number;
+  members: PublicCompanyMember[];
+  departments: PublicCompanyDepartment[];
+}
+
+export interface CompanyPageEventPayload {
+  event_type: "page_view" | "member_click";
+  member_user_id?: string | null;
+  referrer?: string;
+}
+
+export interface CompanyAnalyticsMemberClick {
+  user_id: string;
+  full_name: string;
+  clicks: number;
+}
+
+export interface CompanyAnalytics {
+  page_views_total: number;
+  page_views_last_7_days: number;
+  member_clicks_total: number;
+  member_clicks_last_7_days: number;
+  top_member_clicks: CompanyAnalyticsMemberClick[];
+}
+
