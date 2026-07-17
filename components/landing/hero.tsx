@@ -8,6 +8,8 @@ import {
   HeroPreviewCard,
   HeroPreviewFrame,
 } from "@/components/landing/hero-preview-card";
+import { HeroCardTilt } from "@/components/landing/hero-card-tilt";
+import { MagneticButton } from "@/components/landing/magnetic-button";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { animationDelays, motion } from "@/lib/motion";
@@ -58,7 +60,7 @@ export function Hero() {
               )}
             >
               Build Your Portfolio{" "}
-              <span className="text-gradient">with AI</span>
+              <span className="text-gradient with-ai-glow">with AI</span>
             </h1>
             <p
               className={cn(
@@ -77,19 +79,29 @@ export function Hero() {
                 animationDelays[300]
               )}
             >
-              <Link
-                href="/signup"
-                className={cn(buttonVariants({ size: "lg" }), "gap-2")}
-              >
-                Get Started
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/demo"
-                className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-              >
-                View Demo
-              </Link>
+              <MagneticButton>
+                <Link
+                  href="/signup"
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "gap-2 shadow-[0_8px_30px_-8px_var(--primary)] transition-shadow hover:shadow-[0_10px_40px_-6px_var(--primary)]",
+                  )}
+                >
+                  Get Started
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </MagneticButton>
+              <MagneticButton>
+                <Link
+                  href="/demo"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "backdrop-blur-sm",
+                  )}
+                >
+                  View Demo
+                </Link>
+              </MagneticButton>
             </div>
             <div
               className={cn(
@@ -106,11 +118,13 @@ export function Hero() {
             </div>
           </div>
 
-          <HeroPreviewFrame>
-            <Suspense fallback={<HeroPreviewFallback />}>
-              <HeroPreviewCard />
-            </Suspense>
-          </HeroPreviewFrame>
+          <HeroCardTilt>
+            <HeroPreviewFrame>
+              <Suspense fallback={<HeroPreviewFallback />}>
+                <HeroPreviewCard />
+              </Suspense>
+            </HeroPreviewFrame>
+          </HeroCardTilt>
         </div>
       </div>
     </section>

@@ -1137,6 +1137,54 @@
   @apply bg-clip-text text-transparent;
 }
 
+/* Slowly drifting ambient glows behind landing sections. */
+.section-glow {
+  animation: section-glow-float 16s ease-in-out infinite alternate;
+}
+.section-glow-slow {
+  animation: section-glow-float 22s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes section-glow-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(6%, 8%, 0) scale(1.15);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-glow,
+  .section-glow-slow {
+    animation: none;
+  }
+}
+
+/* Pulsing neon glow for the hero "with AI" accent text. */
+.with-ai-glow {
+  filter: drop-shadow(0 0 18px rgba(139, 92, 246, 0.45));
+  animation: with-ai-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes with-ai-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 16px rgba(139, 92, 246, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(168, 85, 247, 0.65));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .with-ai-glow {
+    animation: none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

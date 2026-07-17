@@ -14,7 +14,7 @@ export function LandingHeader() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/90 shadow-[var(--shadow-header)] backdrop-blur-md transition-shadow duration-300 supports-[backdrop-filter]:bg-background/75">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-background/60 shadow-[0_8px_32px_-16px_rgba(139,92,246,0.4)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 supports-[backdrop-filter]:bg-background/45">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <LogoMark className="h-9 w-9" priority />
