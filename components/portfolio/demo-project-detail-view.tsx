@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { SiteBackdrop } from "@/components/brand/site-backdrop";
 import { PortfolioProjectDetail } from "@/components/portfolio/portfolio-project-detail";
 import { TemplateDemoToolbar } from "@/components/portfolio/template-demo-toolbar";
 import { PortfolioDemoProvider } from "@/contexts/portfolio-demo-context";
@@ -32,10 +33,13 @@ export function DemoProjectDetailView({
 
   if (isLoading) {
     return (
-      <div className="min-h-[50vh] animate-pulse bg-muted/20">
-        <div className="mx-auto max-w-3xl space-y-6 px-4 py-12">
-          <div className="h-8 w-40 rounded bg-muted/50" />
-          <div className="aspect-video rounded-2xl bg-muted/50" />
+      <div className="relative min-h-svh">
+        <SiteBackdrop />
+        <div className="relative z-10 min-h-[50vh] animate-pulse">
+          <div className="mx-auto max-w-3xl space-y-6 px-4 py-12">
+            <div className="h-8 w-40 rounded bg-muted/50" />
+            <div className="aspect-video rounded-2xl bg-muted/50" />
+          </div>
         </div>
       </div>
     );
@@ -43,8 +47,11 @@ export function DemoProjectDetailView({
 
   if (isError || !data) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center px-4 text-center text-muted-foreground">
-        Demo project is unavailable right now.
+      <div className="relative flex min-h-svh items-center justify-center px-4">
+        <SiteBackdrop />
+        <p className="relative z-10 rounded-xl border border-border/60 bg-card/75 px-6 py-4 text-center text-muted-foreground backdrop-blur-md">
+          Demo project is unavailable right now.
+        </p>
       </div>
     );
   }
@@ -58,8 +65,11 @@ export function DemoProjectDetailView({
 
   if (!project) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center px-4 text-center text-muted-foreground">
-        Project not found in demo portfolio.
+      <div className="relative flex min-h-svh items-center justify-center px-4">
+        <SiteBackdrop />
+        <p className="relative z-10 rounded-xl border border-border/60 bg-card/75 px-6 py-4 text-center text-muted-foreground backdrop-blur-md">
+          Project not found in demo portfolio.
+        </p>
       </div>
     );
   }
@@ -69,20 +79,23 @@ export function DemoProjectDetailView({
     resolvedTemplate.charAt(0).toUpperCase() + resolvedTemplate.slice(1);
 
   return (
-    <div className="min-h-screen bg-background">
-      <TemplateDemoToolbar
-        templateSlug={resolvedTemplate}
-        templateName={templateName}
-        backHref={`${getTemplateDemoPath(resolvedTemplate)}#projects`}
-        backLabel="Back to demo"
-      />
-      <PortfolioDemoProvider value={demo}>
-        <PortfolioProjectDetail
-          project={project}
-          portfolioHref={`${getTemplateDemoPath(resolvedTemplate)}#projects`}
-          backLabel="Back to projects"
+    <div className="relative min-h-svh">
+      <SiteBackdrop />
+      <div className="relative z-10">
+        <TemplateDemoToolbar
+          templateSlug={resolvedTemplate}
+          templateName={templateName}
+          backHref={`${getTemplateDemoPath(resolvedTemplate)}#projects`}
+          backLabel="Back to demo"
         />
-      </PortfolioDemoProvider>
+        <PortfolioDemoProvider value={demo}>
+          <PortfolioProjectDetail
+            project={project}
+            portfolioHref={`${getTemplateDemoPath(resolvedTemplate)}#projects`}
+            backLabel="Back to projects"
+          />
+        </PortfolioDemoProvider>
+      </div>
     </div>
   );
 }
