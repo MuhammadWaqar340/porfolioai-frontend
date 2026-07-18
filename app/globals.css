@@ -558,19 +558,26 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--foreground);
+  transform: translateZ(0);
   transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.3s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
 }
 
 [data-aurora-section="constellation"]
   .aurora-constellation-content
   [data-portfolio-section="skills"]
   [data-slot="badge"]:hover {
-  border-color: oklch(0.55 0.14 15 / 40%);
-  background: oklch(0.55 0.14 15 / 6%);
-  transform: translateY(-1px);
+  border-color: oklch(0.55 0.14 15 / 45%);
+  background: oklch(0.55 0.14 15 / 8%);
+  transform: translateY(-4px) translateZ(10px) scale(1.04);
+  box-shadow: 0 12px 28px -16px oklch(0.45 0.12 300 / 45%);
+}
+
+[data-aurora-section="timeline"] .aurora-timeline-content {
+  perspective: 1000px;
 }
 
 [data-aurora-section="timeline"]
@@ -592,10 +599,41 @@
   .aurora-timeline-content
   [data-portfolio-section="experience"]
   .space-y-6 {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   margin-top: 0.5rem;
+}
+
+[data-aurora-section="timeline"]
+  .aurora-timeline-content
+  [data-portfolio-section="experience"]
+  .space-y-6::before {
+  content: "";
+  position: absolute;
+  left: 0.35rem;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    oklch(0.55 0.14 15 / 55%),
+    oklch(0.45 0.12 300 / 55%)
+  );
+  transform-origin: top;
+  animation: aurora-timeline-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes aurora-timeline-draw {
+  from {
+    transform: scaleY(0);
+    opacity: 0.2;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
 }
 
 [data-aurora-section="timeline"]
@@ -610,7 +648,22 @@
   border-radius: 0.125rem;
   background: var(--background);
   padding: 1.25rem 1.25rem 1.25rem 1.5rem;
-  box-shadow: none;
+  box-shadow: 0 10px 32px -24px oklch(0.35 0.12 320 / 35%);
+  transform: translateZ(0);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease,
+    box-shadow 0.4s ease;
+}
+
+[data-aurora-section="timeline"]
+  .aurora-timeline-content
+  [data-portfolio-section="experience"]
+  .space-y-6
+  > div:hover {
+  transform: translateX(4px) translateZ(12px);
+  border-color: oklch(0.55 0.14 15 / 35%);
+  box-shadow: 0 18px 40px -24px oklch(0.35 0.12 320 / 50%);
 }
 
 [data-aurora-section="timeline"]
@@ -662,6 +715,27 @@
   color: oklch(0.72 0.1 15);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [data-aurora-section="timeline"]
+    .aurora-timeline-content
+    [data-portfolio-section="experience"]
+    .space-y-6::before {
+    animation: none;
+  }
+  [data-aurora-section="timeline"]
+    .aurora-timeline-content
+    [data-portfolio-section="experience"]
+    .space-y-6
+    > div,
+  [data-aurora-section="constellation"]
+    .aurora-constellation-content
+    [data-portfolio-section="skills"]
+    [data-slot="badge"] {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
 [data-aurora-section="timeline"]
   .aurora-timeline-content
   [data-portfolio-section="experience"]
@@ -685,6 +759,10 @@
     justify-content: space-between;
     gap: 1rem;
   }
+}
+
+[data-aurora-section="showcase"] .aurora-showcase-content {
+  perspective: 1100px;
 }
 
 [data-aurora-section="showcase"]
@@ -730,12 +808,14 @@
   display: flex;
   min-width: 0;
   height: 100%;
+  transform-style: preserve-3d;
 }
 
 [data-aurora-section="showcase"]
   .aurora-showcase-content
   [data-portfolio-section="projects"]
   .group {
+  position: relative;
   display: flex;
   width: 100%;
   height: 100%;
@@ -744,18 +824,68 @@
   border-radius: 0.125rem;
   border: 1px solid oklch(0.45 0.12 300 / 18%);
   background: var(--background);
-  box-shadow: none;
+  box-shadow: 0 12px 40px -28px oklch(0.35 0.12 320 / 40%);
+  transform: rotateX(0deg) translateZ(0);
   transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
+    border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-aurora-section="showcase"]
+  .aurora-showcase-content
+  [data-portfolio-section="projects"]
+  .group::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    oklch(1 0 0 / 14%) 50%,
+    transparent 65%
+  );
+  background-size: 220% 100%;
+  background-position: 160% 0;
+  opacity: 0;
+  transition:
+    opacity 0.35s ease,
+    background-position 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 [data-aurora-section="showcase"]
   .aurora-showcase-content
   [data-portfolio-section="projects"]
   .group:hover {
-  border-color: oklch(0.55 0.14 15 / 35%);
-  transform: translateY(-2px);
+  border-color: oklch(0.55 0.14 15 / 40%);
+  transform: rotateX(4deg) translateY(-6px) translateZ(18px);
+  box-shadow: 0 28px 60px -28px oklch(0.35 0.12 320 / 55%);
+}
+
+[data-aurora-section="showcase"]
+  .aurora-showcase-content
+  [data-portfolio-section="projects"]
+  .group:hover::after {
+  opacity: 1;
+  background-position: -40% 0;
+}
+
+[data-aurora-section="showcase"]
+  .aurora-showcase-content
+  [data-portfolio-section="projects"]
+  .group
+  img {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-aurora-section="showcase"]
+  .aurora-showcase-content
+  [data-portfolio-section="projects"]
+  .group:hover
+  img {
+  transform: scale(1.08);
 }
 
 [data-aurora-section="showcase"]
@@ -768,6 +898,7 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem 1.25rem 1.25rem;
+  transform: translateZ(12px);
 }
 
 [data-aurora-section="showcase"]
@@ -823,6 +954,25 @@
   border-radius: 0.125rem;
   border-color: oklch(0.45 0.12 300 / 25%);
   font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-aurora-section="showcase"]
+    .aurora-showcase-content
+    [data-portfolio-section="projects"]
+    .group,
+  [data-aurora-section="showcase"]
+    .aurora-showcase-content
+    [data-portfolio-section="projects"]
+    .group
+    img,
+  [data-aurora-section="showcase"]
+    .aurora-showcase-content
+    [data-portfolio-section="projects"]
+    .group::after {
+    transition: none !important;
+    transform: none !important;
+  }
 }
 
 [data-aurora-section="reach"] .aurora-reach-content {
