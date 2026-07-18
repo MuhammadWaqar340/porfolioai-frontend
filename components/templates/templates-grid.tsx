@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TemplateCard } from "@/components/cards/template-card";
+import { PremiumCard } from "@/components/landing/premium-card";
+import { Tilt } from "@/components/motion/tilt";
 import { ProUpgradeCard } from "@/components/subscription/pro-upgrade-card";
 import { FormAlert } from "@/components/ui/form-alert";
 import {
@@ -199,23 +201,28 @@ export function TemplatesGrid({
           {filteredTemplates.map((template, index) => (
             <TemplateCarouselSlide key={template.id}>
               <div className={cn(motion.fadeInUp, cardAnimationDelay(index))}>
-                <TemplateCard
-                  template={template}
-                  layout={canSelect ? "select" : "browse"}
-                  isSelected={selectedTemplateId === template.id}
-                  isSelecting={selectingId === template.id && isUpdating}
-                  isLocked={canSelect && !canUseTemplate(template.slug)}
-                  onSelect={canSelect ? handleSelect : undefined}
-                  previewFrom={canSelect ? "templates" : undefined}
-                  actionLabel={canSelect ? undefined : "Get started"}
-                  onAction={
-                    canSelect
-                      ? undefined
-                      : () => {
-                          router.push("/signup");
-                        }
-                  }
-                />
+                <Tilt max={7} lift={12}>
+                  <PremiumCard>
+                    <TemplateCard
+                      template={template}
+                      className="border-border/60 bg-card/80 backdrop-blur-md transition-[box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-[var(--shadow-card-hover)]"
+                      layout={canSelect ? "select" : "browse"}
+                      isSelected={selectedTemplateId === template.id}
+                      isSelecting={selectingId === template.id && isUpdating}
+                      isLocked={canSelect && !canUseTemplate(template.slug)}
+                      onSelect={canSelect ? handleSelect : undefined}
+                      previewFrom={canSelect ? "templates" : undefined}
+                      actionLabel={canSelect ? undefined : "Get started"}
+                      onAction={
+                        canSelect
+                          ? undefined
+                          : () => {
+                              router.push("/signup");
+                            }
+                      }
+                    />
+                  </PremiumCard>
+                </Tilt>
               </div>
             </TemplateCarouselSlide>
           ))}

@@ -4,13 +4,9 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { useFrame } from "@react-three/fiber";
 import { useRef, type RefObject } from "react";
 import type { PointLight } from "three";
-import { NeuralNetwork } from "@/components/landing/three/NeuralNetwork";
+import { FloatingHolograms } from "@/components/landing/three/FloatingHolograms";
 import type { RenderTier } from "@/hooks/use-webgl-capability";
 
-/**
- * Eases the camera toward a pointer-driven offset (parallax + tilt) and dollies
- * it deeper on scroll (z 8 → 4) for a cinematic reveal as the hero exits.
- */
 function ParallaxRig({
   strength = 1,
   scrollProgress,
@@ -21,37 +17,35 @@ function ParallaxRig({
   useFrame((state, delta) => {
     const { camera, pointer } = state;
     const progress = scrollProgress.current ?? 0;
-    const targetX = pointer.x * 0.8 * strength;
-    const targetY = pointer.y * 0.5 * strength;
-    const targetZ = 8 - progress * 4;
-    // damping ~0.05 feel, frame-rate independent
+    const targetX = pointer.x * 0.55 * strength;
+    const targetY = pointer.y * 0.35 * strength;
+    const targetZ = 8 - progress * 3.2;
     const lerp = 1 - Math.pow(0.05, delta);
     camera.position.x += (targetX - camera.position.x) * lerp;
     camera.position.y += (targetY - camera.position.y) * lerp;
     camera.position.z += (targetZ - camera.position.z) * lerp;
-    camera.rotation.z += (-pointer.x * 0.03 - camera.rotation.z) * lerp;
+    camera.rotation.z += (-pointer.x * 0.018 - camera.rotation.z) * lerp;
     camera.lookAt(0, 0, 0);
   });
   return null;
 }
 
-/** Two purple point lights slowly orbiting for ambient movement. */
-function DriftingLights() {
+function SoftLights() {
   const a = useRef<PointLight>(null);
   const b = useRef<PointLight>(null);
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     if (a.current) {
-      a.current.position.set(Math.sin(t * 0.3) * 6, Math.cos(t * 0.25) * 3, -2);
+      a.current.position.set(Math.sin(t * 0.2) * 5, Math.cos(t * 0.18) * 2.5, -2);
     }
     if (b.current) {
-      b.current.position.set(Math.cos(t * 0.2) * -6, Math.sin(t * 0.3) * 4, 1);
+      b.current.position.set(Math.cos(t * 0.15) * -5, Math.sin(t * 0.22) * 3, 0.5);
     }
   });
   return (
     <>
-      <pointLight ref={a} color="#8b5cf6" intensity={45} distance={30} />
-      <pointLight ref={b} color="#a855f7" intensity={35} distance={30} />
+      <pointLight ref={a} color="#a78bfa" intensity={22} distance={28} />
+      <pointLight ref={b} color="#818cf8" intensity={16} distance={26} />
     </>
   );
 }
@@ -67,29 +61,25 @@ export function LandingHeroScene({
   allowPostProcessing,
   scrollProgress,
 }: LandingHeroSceneProps) {
-  const nodeCount = tier === "high" ? 78 : tier === "medium" ? 48 : 26;
-  const signalCount = tier === "high" ? 20 : tier === "medium" ? 12 : 6;
-
   return (
     <>
-      <fog attach="fog" args={["#0f172a", 10, 50]} />
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[5, 5, 5]} intensity={1.1} />
-      <DriftingLights />
+      <fog attach="fog" args={["#0f0b1a", 14, 40]} />
+      <ambientLight intensity={0.42} />
+      <directionalLight position={[4, 5, 4]} intensity={0.55} color="#e2e8f0" />
+      <SoftLights />
 
-      {/* Neural-network constellation — the AI-themed centerpiece. */}
-      <NeuralNetwork count={nodeCount} signals={signalCount} />
+      <FloatingHolograms tier={tier} />
 
       <ParallaxRig
-        strength={tier === "high" ? 1 : 0.6}
+        strength={tier === "high" ? 0.85 : 0.5}
         scrollProgress={scrollProgress}
       />
 
       {allowPostProcessing ? (
         <EffectComposer multisampling={0} enableNormalPass={false}>
           <Bloom
-            intensity={0.9}
-            luminanceThreshold={0.25}
+            intensity={0.45}
+            luminanceThreshold={0.35}
             luminanceSmoothing={0.9}
             mipmapBlur
           />

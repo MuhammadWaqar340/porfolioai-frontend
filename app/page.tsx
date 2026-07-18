@@ -1,3 +1,4 @@
+import { AmbientLayers } from "@/components/landing/ambient-layers";
 import { CTA } from "@/components/landing/cta";
 import { Features } from "@/components/landing/features";
 import { LandingFooter } from "@/components/landing/footer";
@@ -11,6 +12,7 @@ export default function HomePage() {
   return (
     <>
       <LandingBackdrop />
+      <AmbientLayers />
       <LandingHeader />
       <Hero />
       <Features />

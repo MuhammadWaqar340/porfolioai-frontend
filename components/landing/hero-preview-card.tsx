@@ -118,15 +118,40 @@ export function HeroPreviewFrame({
         animationDelays[200]
       )}
     >
-      <div className="absolute -inset-4 rounded-2xl bg-gradient-to-r from-primary/25 to-violet-500/20 blur-2xl dark:from-primary/15 dark:to-violet-500/10" />
+      <div
+        className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-primary/30 to-violet-500/25 blur-2xl dark:from-primary/20 dark:to-violet-500/15 animate-template-glow"
+        aria-hidden
+      />
       <div
         className={cn(
-          "relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[var(--shadow-card-hover)]",
+          "relative overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-[var(--shadow-card-hover)] backdrop-blur-xl",
+          "ring-1 ring-primary/15",
           motion.transition,
-          "hover:shadow-2xl hover:-translate-y-1 motion-reduce:transform-none"
+          "hover:shadow-[0_28px_60px_-18px_oklch(0.45_0.2_280/0.45)] hover:ring-primary/30 motion-reduce:transform-none"
         )}
+        style={{ transformStyle: "preserve-3d" }}
       >
-        <div className="flex items-center gap-2 border-b bg-muted/50 px-4 py-3">
+        {/* Glass reflection */}
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-10 h-1/3 bg-gradient-to-b from-white/12 to-transparent dark:from-white/8"
+          aria-hidden
+        />
+        {/* Animated border glow */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-2xl opacity-60"
+          style={{
+            background:
+              "linear-gradient(120deg, transparent 30%, oklch(0.7 0.18 280 / 0.35) 50%, transparent 70%)",
+            backgroundSize: "200% 200%",
+            animation: "hero-border-glow 6s ease-in-out infinite",
+            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            maskComposite: "exclude",
+            WebkitMaskComposite: "xor",
+            padding: "1px",
+          }}
+          aria-hidden
+        />
+        <div className="relative flex items-center gap-2 border-b border-border/50 bg-muted/40 px-4 py-3 backdrop-blur-sm">
           <div className="flex gap-1.5">
             <div className="h-3 w-3 rounded-full bg-red-400" />
             <div className="h-3 w-3 rounded-full bg-yellow-400" />
@@ -136,7 +161,7 @@ export function HeroPreviewFrame({
             portfolioai.app/demo
           </span>
         </div>
-        {children}
+        <div className="relative">{children}</div>
       </div>
     </div>
   );

@@ -1,55 +1,75 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
+import type { ReactNode } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { landingSpring } from "@/lib/landing-motion";
 import { cn } from "@/lib/utils";
 
 interface TiltProps {
   children: ReactNode;
   className?: string;
-  /** Max tilt in degrees. */
   max?: number;
-  /** Lift toward the viewer on hover, in px. */
   lift?: number;
+  float?: boolean;
 }
 
-/**
- * Generic 3D cursor tilt for cards. Applies a perspective rotation toward the
- * pointer plus a subtle lift, giving flat cards spatial depth to match the 3D
- * hero. Purely presentational and disabled under reduced motion; children keep
- * all their normal interactivity.
- */
-export function Tilt({ children, className, max = 7, lift = 6 }: TiltProps) {
-  const ref = useRef<HTMLDivElement>(null);
+export function Tilt({
+  children,
+  className,
+  max = 8,
+  lift = 10,
+  float = false,
+}: TiltProps) {
   const reducedMotion = useReducedMotion();
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const z = useMotionValue(0);
+
+  const springX = useSpring(rotateX, landingSpring);
+  const springY = useSpring(rotateY, landingSpring);
+  const springZ = useSpring(z, landingSpring);
+  const transform = useMotionTemplate`perspective(1000px) rotateX(${springX}deg) rotateY(${springY}deg) translateZ(${springZ}px)`;
 
   const handleMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (reducedMotion || !ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
+    if (reducedMotion) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    const rect = e.currentTarget.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;
-    ref.current.style.transform = `perspective(900px) rotateY(${px * max}deg) rotateX(${-py * max}deg) translateZ(${lift}px)`;
+    rotateX.set(-py * max * 2);
+    rotateY.set(px * max * 2);
+    z.set(lift);
   };
 
   const reset = () => {
-    if (ref.current) {
-      ref.current.style.transform =
-        "perspective(900px) rotateY(0deg) rotateX(0deg) translateZ(0px)";
-    }
+    rotateX.set(0);
+    rotateY.set(0);
+    z.set(0);
   };
 
   return (
-    <div
-      ref={ref}
+    <motion.div
       onPointerMove={handleMove}
       onPointerLeave={reset}
-      className={cn(
-        "h-full transition-transform duration-200 ease-out will-change-transform",
-        className,
-      )}
-      style={{ transformStyle: "preserve-3d" }}
+      className={cn("h-full will-change-transform", className)}
+      style={{
+        transformStyle: "preserve-3d",
+        transform: reducedMotion ? undefined : transform,
+      }}
+      animate={float && !reducedMotion ? { y: [0, -8, 0] } : undefined}
+      transition={
+        float && !reducedMotion
+          ? { duration: 5.5, repeat: Infinity, ease: "easeInOut" }
+          : undefined
+      }
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
