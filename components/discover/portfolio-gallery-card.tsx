@@ -19,7 +19,7 @@ export function PortfolioGalleryCard({ item, className }: PortfolioGalleryCardPr
 
   return (
     <Link href={`/${item.username}`} className={cn("group block h-full", className)}>
-      <Card className="h-full transition-shadow hover:shadow-md">
+      <Card className="h-full border-border/60 bg-card/75 shadow-[var(--shadow-card)] backdrop-blur-md transition-all duration-300 supports-[backdrop-filter]:bg-card/65 hover:border-primary/30 hover:shadow-[var(--shadow-card-hover)]">
         <CardHeader className="flex flex-row items-start gap-4 space-y-0 pb-3">
           <ProfileAvatar
             src={avatarUrl}

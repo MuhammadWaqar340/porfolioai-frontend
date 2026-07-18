@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { SiteBackdrop } from "@/components/brand/site-backdrop";
 import { LandingFooter } from "@/components/landing/footer";
 import { LandingHeader } from "@/components/landing/header";
 import { FadeIn } from "@/components/motion/fade-in";
@@ -16,9 +17,10 @@ export function LegalPageLayout({
   children,
 }: LegalPageLayoutProps) {
   return (
-    <>
+    <div className="relative min-h-svh">
+      <SiteBackdrop />
       <LandingHeader />
-      <main className="min-h-[calc(100vh-8rem)] bg-background">
+      <main className="relative z-10 min-h-[calc(100vh-8rem)]">
         <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
           <Link
             href="/"
@@ -29,25 +31,27 @@ export function LegalPageLayout({
           </Link>
 
           <FadeIn>
-            <header className="mb-10 space-y-2 border-b pb-8">
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                {title}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Last updated: {lastUpdated}
-              </p>
-            </header>
-          </FadeIn>
+            <div className="rounded-2xl border border-border/60 bg-card/75 p-6 shadow-[var(--shadow-card)] backdrop-blur-xl supports-[backdrop-filter]:bg-card/65 sm:p-8 lg:p-10">
+              <header className="mb-10 space-y-2 border-b border-border/60 pb-8">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                  {title}
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Last updated: {lastUpdated}
+                </p>
+              </header>
 
-          <FadeIn delay={100}>
-            <article className="legal-prose space-y-8 text-sm leading-relaxed text-muted-foreground sm:text-base">
-              {children}
-            </article>
+              <article className="legal-prose space-y-8 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                {children}
+              </article>
+            </div>
           </FadeIn>
         </div>
       </main>
-      <LandingFooter />
-    </>
+      <div className="relative z-10">
+        <LandingFooter />
+      </div>
+    </div>
   );
 }
 

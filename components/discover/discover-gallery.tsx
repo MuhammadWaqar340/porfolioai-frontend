@@ -37,7 +37,7 @@ export function DiscoverGallery() {
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
             placeholder="Search by name, title, or username…"
-            className="pl-9"
+            className="border-border/60 bg-background/70 pl-9 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/55"
             aria-label="Search portfolios"
           />
         </div>
@@ -46,15 +46,18 @@ export function DiscoverGallery() {
       {isLoading ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="h-56 animate-pulse rounded-xl border bg-muted/40" />
+            <div
+              key={index}
+              className="h-56 animate-pulse rounded-xl border border-border/50 bg-muted/30 backdrop-blur-sm"
+            />
           ))}
         </div>
       ) : isError ? (
-        <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
+        <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-10 text-center text-sm text-muted-foreground backdrop-blur-md">
           Could not load portfolios. Please try again later.
         </div>
       ) : !data?.items.length ? (
-        <div className="rounded-xl border border-dashed p-10 text-center">
+        <div className="rounded-xl border border-dashed border-border/60 bg-background/60 p-10 text-center backdrop-blur-md">
           <p className="font-medium">No portfolios in the gallery yet</p>
           <p className="mt-2 text-sm text-muted-foreground">
             {query

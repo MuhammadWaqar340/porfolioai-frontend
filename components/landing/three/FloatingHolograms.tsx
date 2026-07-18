@@ -15,7 +15,7 @@ import {
   Points,
   Vector3,
 } from "three";
-import type { RenderTier } from "@/hooks/use-webgl-capability";
+import type { RenderTier, ViewportBand } from "@/hooks/use-webgl-capability";
 
 type CardKind = "profile" | "projects" | "skills" | "experience";
 
@@ -395,47 +395,141 @@ const CARD_LAYOUTS: CardSpec[] = [
   },
 ];
 
-interface FloatingHologramsProps {
-  tier: RenderTier;
+/** Compact layouts for narrow viewports so cards stay in frame behind content. */
+const MOBILE_LAYOUTS: CardSpec[] = [
+  {
+    kind: "profile",
+    position: [-1.15, 1.35, -2.2],
+    rotation: [0.1, 0.22, -0.03],
+    scale: 0.62,
+    phase: 0.2,
+    speed: 0.32,
+    drift: 0.55,
+  },
+  {
+    kind: "projects",
+    position: [1.2, 0.85, -2.6],
+    rotation: [-0.06, -0.24, 0.03],
+    scale: 0.58,
+    phase: 1.1,
+    speed: 0.28,
+    drift: 0.6,
+  },
+  {
+    kind: "skills",
+    position: [-0.95, -1.15, -2.0],
+    rotation: [0.08, 0.18, 0.02],
+    scale: 0.52,
+    phase: 2.0,
+    speed: 0.34,
+    drift: 0.5,
+  },
+];
+
+const TABLET_LAYOUTS: CardSpec[] = [
+  {
+    kind: "profile",
+    position: [-2.4, 1.0, -1.6],
+    rotation: [0.06, 0.28, -0.04],
+    scale: 0.82,
+    phase: 0.2,
+    speed: 0.36,
+    drift: 0.75,
+  },
+  {
+    kind: "projects",
+    position: [2.45, 0.5, -2.0],
+    rotation: [-0.04, -0.3, 0.04],
+    scale: 0.78,
+    phase: 1.1,
+    speed: 0.32,
+    drift: 0.85,
+  },
+  {
+    kind: "skills",
+    position: [-1.9, -1.35, -1.2],
+    rotation: [0.08, 0.22, 0.03],
+    scale: 0.68,
+    phase: 2.0,
+    speed: 0.38,
+    drift: 0.7,
+  },
+  {
+    kind: "experience",
+    position: [1.85, -1.15, -2.4],
+    rotation: [-0.06, -0.18, -0.03],
+    scale: 0.7,
+    phase: 0.8,
+    speed: 0.34,
+    drift: 0.8,
+  },
+];
+
+function layoutsForBand(band: ViewportBand): CardSpec[] {
+  if (band === "mobile") return MOBILE_LAYOUTS;
+  if (band === "tablet") return TABLET_LAYOUTS;
+  return CARD_LAYOUTS;
 }
 
-/** Quiet floating portfolio cards — restrained depth, no visual noise. */
-export function FloatingHolograms({ tier }: FloatingHologramsProps) {
-  const { viewport } = useThree();
+interface FloatingHologramsProps {
+  tier: RenderTier;
+  band: ViewportBand;
+}
+
+/** Quiet floating portfolio cards — layout adapts to mobile / tablet / desktop. */
+export function FloatingHolograms({ tier, band }: FloatingHologramsProps) {
+  const { viewport, size } = useThree();
   const root = useRef<Group>(null);
   const pointer = useRef(new Vector3());
   const sprite = useMemo(() => makeGlowSprite(), []);
 
   const cards = useMemo(() => {
-    if (tier === "low") return CARD_LAYOUTS.slice(0, 2);
-    if (tier === "medium") return CARD_LAYOUTS.slice(0, 3);
-    return CARD_LAYOUTS;
-  }, [tier]);
+    const base = layoutsForBand(band);
+    if (tier === "low") return base.slice(0, band === "mobile" ? 2 : 2);
+    if (tier === "medium") return base.slice(0, Math.min(3, base.length));
+    return base;
+  }, [tier, band]);
 
-  const dustCount = tier === "high" ? 70 : tier === "medium" ? 40 : 20;
+  const dustCount =
+    band === "mobile"
+      ? 14
+      : band === "tablet"
+        ? tier === "high"
+          ? 36
+          : 24
+        : tier === "high"
+          ? 70
+          : tier === "medium"
+            ? 40
+            : 20;
+
+  // Extra squeeze if the canvas is very narrow (foldables / portrait tablets).
+  const widthScale = MathUtils.clamp(size.width / 960, 0.72, 1);
 
   useFrame((state) => {
+    const pointerScale = band === "mobile" ? 0.04 : band === "tablet" ? 0.08 : 0.12;
     pointer.current.set(
-      state.pointer.x * viewport.width * 0.12,
-      state.pointer.y * viewport.height * 0.09,
+      state.pointer.x * viewport.width * pointerScale,
+      state.pointer.y * viewport.height * pointerScale * 0.75,
       0,
     );
     if (root.current) {
+      const rotScale = band === "mobile" ? 0.02 : 0.05;
       root.current.rotation.y = MathUtils.lerp(
         root.current.rotation.y,
-        state.pointer.x * 0.05,
+        state.pointer.x * rotScale,
         0.035,
       );
       root.current.rotation.x = MathUtils.lerp(
         root.current.rotation.x,
-        -state.pointer.y * 0.03,
+        -state.pointer.y * rotScale * 0.6,
         0.035,
       );
     }
   });
 
   return (
-    <group ref={root}>
+    <group ref={root} scale={[widthScale, widthScale, 1]}>
       {cards.map((spec) => (
         <HologramCard key={spec.kind} spec={spec} pointer={pointer} />
       ))}

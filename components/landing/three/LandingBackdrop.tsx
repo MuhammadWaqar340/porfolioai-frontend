@@ -3,25 +3,19 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import { useWebGLCapability } from "@/hooks/use-webgl-capability";
+import { cn } from "@/lib/utils";
 
-// The Three.js canvas is code-split and never server-rendered, so the 3D
-// bundle only downloads on capable clients that actually mount it.
 const HeroCanvas = dynamic(
   () => import("@/components/landing/three/HeroCanvas"),
   { ssr: false },
 );
 
 /**
- * Single page-wide 3D layer for the whole landing page. It's `fixed` and sits
- * behind every section (which are translucent), so one WebGL context provides
- * the shared 3D background for Hero, Features, Templates, Pricing, CTA and the
- * Contact footer. Renders `null` (CSS fallback) on incapable / reduced-motion
- * devices, and passes pointer events through.
+ * Page-wide 3D layer. Opacity and density adapt by viewport band so mobile
+ * content stays readable while still getting a subtle depth cue.
  */
 export function LandingBackdrop() {
-  const { canRender3D, tier, allowPostProcessing } = useWebGLCapability();
-  // Progress (0→1) across the full page, driving the camera dolly as the user
-  // travels down through the sections.
+  const { canRender3D, tier, band, allowPostProcessing } = useWebGLCapability();
   const scrollProgress = useRef(0);
 
   useEffect(() => {
@@ -30,7 +24,8 @@ export function LandingBackdrop() {
     const update = () => {
       frame = 0;
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      scrollProgress.current = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      scrollProgress.current =
+        max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
     };
     const onScroll = () => {
       if (frame) return;
@@ -51,11 +46,17 @@ export function LandingBackdrop() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0"
+      className={cn(
+        "pointer-events-none fixed inset-0",
+        band === "mobile" && "opacity-45",
+        band === "tablet" && "opacity-70",
+        band === "desktop" && "opacity-100",
+      )}
       style={{ zIndex: -10, contain: "strict" }}
     >
       <HeroCanvas
         tier={tier}
+        band={band}
         allowPostProcessing={allowPostProcessing}
         scrollProgress={scrollProgress}
       />

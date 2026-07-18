@@ -1,3 +1,4 @@
+import { DiscoverBackdrop } from "@/components/discover/discover-backdrop";
 import { DiscoverGallery } from "@/components/discover/discover-gallery";
 import { LandingFooter } from "@/components/landing/footer";
 import { LandingHeader } from "@/components/landing/header";
@@ -9,11 +10,15 @@ export const metadata = {
 
 export default function DiscoverPage() {
   return (
-    <>
+    <div className="relative min-h-svh">
+      <DiscoverBackdrop />
       <LandingHeader />
-      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <main className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto mb-10 max-w-2xl text-center">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <p className="text-sm font-medium uppercase tracking-wider text-primary">
+            Gallery
+          </p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
             Discover portfolios
           </h1>
           <p className="mt-3 text-muted-foreground">
@@ -23,7 +28,9 @@ export default function DiscoverPage() {
         </div>
         <DiscoverGallery />
       </main>
-      <LandingFooter />
-    </>
+      <div className="relative z-10">
+        <LandingFooter />
+      </div>
+    </div>
   );
 }
