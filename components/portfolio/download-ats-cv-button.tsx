@@ -82,7 +82,7 @@ export function DownloadAtsCvButton({ className }: DownloadAtsCvButtonProps) {
       anchor.href = objectUrl;
       anchor.download = filenameFromDisposition(
         response.headers.get("Content-Disposition"),
-        "ATS_CV.docx",
+        publicUsername ? `Resume-${publicUsername}.docx` : "Resume.docx",
       );
       document.body.appendChild(anchor);
       anchor.click();
