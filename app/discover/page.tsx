@@ -1,11 +1,12 @@
 import { DiscoverBackdrop } from "@/components/discover/discover-backdrop";
-import { DiscoverGallery } from "@/components/discover/discover-gallery";
+import { DiscoverTabs } from "@/components/discover/discover-tabs";
 import { LandingFooter } from "@/components/landing/footer";
 import { LandingHeader } from "@/components/landing/header";
 
 export const metadata = {
-  title: "Discover Portfolios",
-  description: "Browse public portfolios built with PortfolioAI.",
+  title: "Discover",
+  description:
+    "Browse public portfolios and organizations built with PortfolioAI.",
 };
 
 export default function DiscoverPage() {
@@ -19,14 +20,14 @@ export default function DiscoverPage() {
             Gallery
           </p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Discover portfolios
+            Discover talent & teams
           </h1>
           <p className="mt-3 text-muted-foreground">
-            Explore public portfolios from creators who opted in to the gallery. Get
-            inspiration for your own site or find talented people to connect with.
+            Explore public portfolios and organizations. Open a team page to meet
+            members and visit their portfolios.
           </p>
         </div>
-        <DiscoverGallery />
+        <DiscoverTabs />
       </main>
       <div className="relative z-10">
         <LandingFooter />

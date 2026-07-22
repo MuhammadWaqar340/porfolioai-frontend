@@ -489,6 +489,8 @@ export interface PublicPortfolioGalleryItem {
   projects_count: number;
   skills_count: number;
   public_url: string;
+  /** True when the portfolio owner's email is verified. */
+  is_verified: boolean;
 }
 
 export interface PublicPortfolioGallery {
@@ -1214,6 +1216,26 @@ export interface PublicCompany {
   member_count: number;
   members: PublicCompanyMember[];
   departments: PublicCompanyDepartment[];
+}
+
+export interface PublicCompanyGalleryItem {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string;
+  industry: string;
+  location: string;
+  about_preview: string;
+  is_verified: boolean;
+  member_count: number;
+  public_url: string;
+}
+
+export interface PublicCompanyGallery {
+  items: PublicCompanyGalleryItem[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export interface CompanyPageEventPayload {

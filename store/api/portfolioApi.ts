@@ -57,6 +57,7 @@ import type {
   EducationSuggestionResult,
   GitHubImportResult,
   PublicCompany,
+  PublicCompanyGallery,
   JobApplication,
   JobApplicationStats,
   JobApplicationStatus,
@@ -1445,6 +1446,20 @@ export const portfolioApi = baseApi.injectEndpoints({
       query: (slug) => `/companies/public/${slug}`,
       transformResponse: (r: ApiSuccess<PublicCompany>) => unwrapApi(r),
     }),
+    getDiscoverCompanies: builder.query<
+      PublicCompanyGallery,
+      { page?: number; limit?: number; q?: string } | void
+    >({
+      query: (params) => {
+        const search = new URLSearchParams();
+        if (params?.page) search.set("page", String(params.page));
+        if (params?.limit) search.set("limit", String(params.limit));
+        if (params?.q?.trim()) search.set("q", params.q.trim());
+        const qs = search.toString();
+        return `/companies/discover${qs ? `?${qs}` : ""}`;
+      },
+      transformResponse: (r: ApiSuccess<PublicCompanyGallery>) => unwrapApi(r),
+    }),
     recordPublicCompanyEvent: builder.mutation<
       { message: string },
       { slug: string; body: CompanyPageEventPayload }
@@ -1726,6 +1741,7 @@ export const {
   usePreviewCompanyInviteQuery,
   useAcceptCompanyInviteMutation,
   useGetPublicCompanyQuery,
+  useGetDiscoverCompaniesQuery,
   useRecordPublicCompanyEventMutation,
   useGetCompanyPlaceholdersQuery,
   useCreateCompanyPlaceholderMutation,

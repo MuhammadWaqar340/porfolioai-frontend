@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, Wrench } from "lucide-react";
+import { BadgeCheck, Briefcase, Wrench } from "lucide-react";
 import Link from "next/link";
 import { ProfileAvatar } from "@/components/profile/profile-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +27,20 @@ export function PortfolioGalleryCard({ item, className }: PortfolioGalleryCardPr
             className="h-14 w-14 shrink-0 text-base"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold group-hover:text-primary">{item.full_name}</p>
+            <div className="flex min-w-0 items-center gap-1.5">
+              <p className="truncate font-semibold group-hover:text-primary">
+                {item.full_name}
+              </p>
+              {item.is_verified ? (
+                <Badge
+                  className="shrink-0 gap-1 bg-blue-500/15 px-1.5 py-0 text-[10px] font-medium text-blue-700 dark:text-blue-300"
+                  title="Email verified"
+                >
+                  <BadgeCheck className="h-3 w-3" aria-hidden />
+                  Verified
+                </Badge>
+              ) : null}
+            </div>
             <p className="truncate text-sm text-muted-foreground">{item.title}</p>
             <p className="mt-1 truncate text-xs text-muted-foreground">/{item.username}</p>
           </div>
