@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Code2, Globe, Link2, Mail, Phone, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo-mark";
+import { DownloadAtsCvButton } from "@/components/portfolio/download-ats-cv-button";
 import { PortfolioCertifications } from "@/components/portfolio/portfolio-certifications";
 import { PortfolioContactForm } from "@/components/portfolio/portfolio-contact-form";
 import { PortfolioEducation } from "@/components/portfolio/portfolio-education";
@@ -280,6 +281,12 @@ export function ContactLinks({
           <span className={plain ? "ml-2" : undefined}>Website</span>
         </Link>
       )}
+      <DownloadAtsCvButton
+        className={cn(
+          contactLinkClass(variant, "outline"),
+          plain && "[&_svg]:mr-0",
+        )}
+      />
     </div>
   );
 }
