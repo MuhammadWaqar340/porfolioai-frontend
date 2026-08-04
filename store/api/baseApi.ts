@@ -25,17 +25,37 @@ const PUBLIC_AUTH_PATHS = new Set([
   "/auth/verify-email",
 ]);
 
+/** Paths that never require a visitor session — a 401 here is NOT "logged out". */
+const PUBLIC_DATA_PATH_PREFIXES = [
+  "/portfolio/public/",
+  "/portfolio/discover",
+  "/portfolio/share/",
+  "/meetings/public/",
+  "/companies/public/",
+  "/companies/discover",
+  "/platform/",
+  "/templates",
+  "/support/",
+];
+
 function getRequestPath(args: string | FetchArgs): string {
   const url = typeof args === "string" ? args : args.url;
   try {
     return new URL(url, API_BASE_URL).pathname.replace(/^\/api\/v1/, "");
   } catch {
-    return url;
+    return url.startsWith("/") ? url : `/${url}`;
   }
 }
 
 function isPublicAuthRequest(args: string | FetchArgs): boolean {
   return PUBLIC_AUTH_PATHS.has(getRequestPath(args));
+}
+
+function isPublicDataRequest(args: string | FetchArgs): boolean {
+  const path = getRequestPath(args);
+  return PUBLIC_DATA_PATH_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(prefix),
+  );
 }
 
 const rawBaseQuery = fetchBaseQuery({
@@ -100,6 +120,19 @@ const baseQueryWithReauth: BaseQueryFn<
   let result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error?.status === 401 && !isPublicAuthRequest(args)) {
+    // Public portfolio/meeting endpoints must never trigger session refresh.
+    // (e.g. Google Calendar token expiry used to return 401 and caused an
+    // infinite refresh → resetApiState → refetch loop on public pages.)
+    if (isPublicDataRequest(args)) {
+      return result;
+    }
+
+    const state = api.getState() as AppState;
+    // No access token means there is no session to renew — don't POST /auth/refresh.
+    if (!state.auth.accessToken) {
+      return result;
+    }
+
     const refreshed = await refreshAccessToken(api, extraOptions);
 
     if (refreshed) {
